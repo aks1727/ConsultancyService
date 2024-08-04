@@ -4,7 +4,6 @@ import {
     VStack,
     HStack,
     Text,
-    Icon,
     Image,
     Link,
     List,
@@ -16,11 +15,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { disableNext, enableNext } from "../../store/disableSlice";
 import { NavLink } from "react-router-dom";
 import conf from "../../conf/conf";
-import { updateAchivement, updateEducation, updateExperience } from "../../store/authSlice";
 
 const MentorUpdateDetails = () => {
     const userData = useSelector(state => state.auth.userData);
-    const stateDetails = useSelector(state => state)
     const [isEducation, setIsEducation] = useState(false);
     const [isExperience, setIsExperience] = useState(false);
     const [isAchievements, setIsAchievements] = useState(false);
@@ -28,64 +25,13 @@ const MentorUpdateDetails = () => {
     const [isBio, setIsBio] = useState(false);
     const dispatch = useDispatch();
 
-    const fetchDetails = async () => {
-        try {
-            let response = await fetch(`${conf.backendUser}/getEducationDetails`, {
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            let data = await response.json();
-            if (data.success) {
-                dispatch(updateEducation(data.data));
-                setIsEducation(true);
-            } else {
-                console.log("Failed to fetch user data");
-            }
-
-            response = await fetch(`${conf.backendUser}/getExperienceDetails`, {
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            data = await response.json();
-            if (data.success) {
-                dispatch(updateExperience(data.data));
-                setIsExperience(true);
-            } else {
-                console.log("Failed to fetch user experience data");
-            }
-
-            response = await fetch(`${conf.backendUser}/getAchievementsDetails`, {
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            data = await response.json();
-            if (data.success) {
-                dispatch(updateAchivement(data.data));
-                setIsAchievements(true);
-            } else {
-                console.log("Failed to fetch user achievements data");
-            }
-        } catch (error) {
-            console.log("Fetch error:", error);
-        }
-    };
 
     useEffect(() => {
-        fetchDetails();
-    }, []);
-
-    useEffect(() => {
-        setIsEducation(stateDetails.education && stateDetails.education.length > 0);
-        setIsExperience(stateDetails.experience && stateDetails.experience.length > 0);
-        setIsAchievements(stateDetails.achievements && stateDetails.achievements.length > 0);
-        setIsSkills(userData.skills && userData.skills.length > 0);
-        setIsBio(userData.bio);
+        setIsEducation(userData?.educations && userData?.educations.length > 0);
+        setIsExperience(userData?.experiences && userData?.experiences.length > 0);
+        setIsAchievements(userData?.achievements && userData?.achievements.length > 0);
+        setIsSkills(userData?.skills && userData?.skills.length > 0);
+        setIsBio(userData?.bio);
     }, [userData]);
 
     useEffect(() => {

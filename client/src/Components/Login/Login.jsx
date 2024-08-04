@@ -18,18 +18,21 @@ import {
 import { useForm } from "react-hook-form";
 import conf from "../../conf/conf.js";
 
-
 function Login() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm();
     const [error, setError] = useState("");
 
     // Function to handle login form submission
     const login = async (data) => {
         setError("");
         try {
-            console.log(data);
+            // console.log(data);
 
             // Send login request to backend
             const session = await fetch(`${conf.backendUser}/login`, {
@@ -38,19 +41,22 @@ function Login() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(data),
-                credentials: 'include', // Include credentials (cookies)
+                credentials: "include", // Include credentials (cookies)
             });
 
-            console.log(session);
+            // console.log(session);
 
             // Check if login was successful
             if (session.ok) {
                 // Fetch current user data
-                const userData = await fetch(`${conf.backendUser}/currentUser`, { credentials: 'include' })
+                const userData = await fetch(
+                    `${conf.backendUser}/currentUser`,
+                    { credentials: "include" }
+                )
                     .then((res) => res.json())
                     .then((res) => res.data);
 
-                console.log(userData);
+                // console.log(userData);
 
                 // Dispatch login action with user data
                 if (userData) {
@@ -78,7 +84,13 @@ function Login() {
     const linkColor = useColorModeValue("blue.500", "blue.300");
 
     return (
-        <Flex align="center" justify="center" bg={bgColor} minH="100vh" p={[4, 6, 8]}>
+        <Flex
+            align="center"
+            justify="center"
+            bg={bgColor}
+            minH="100vh"
+            p={[4, 6, 8]}
+        >
             <Box
                 w="full"
                 maxW={["full", "lg"]}
@@ -89,7 +101,10 @@ function Login() {
                 borderColor="blackAlpha.200"
                 boxShadow="xl"
             >
-                <Box mb={2} textAlign="center">
+                <Box
+                    mb={2}
+                    textAlign="center"
+                >
                     {/* Logo */}
                     <Box className="mb-2 flex justify-center">
                         <span className="inline-block w-full max-w-[100px]">
@@ -98,14 +113,27 @@ function Login() {
                     </Box>
 
                     {/* Heading */}
-                    <Heading as="h2" size="lg" mb={2}>
+                    <Heading
+                        as="h2"
+                        size="lg"
+                        mb={2}
+                    >
                         Sign in to your account
                     </Heading>
 
                     {/* Sign up link */}
-                    <Text fontSize={["md", "lg"]} color={textColor}>
+                    <Text
+                        fontSize={["md", "lg"]}
+                        color={textColor}
+                    >
                         Don&apos;t have an account?&nbsp;
-                        <Link to="/signup" style={{ color: linkColor, textDecoration: 'underline' }}>
+                        <Link
+                            to="/signup"
+                            style={{
+                                color: linkColor,
+                                textDecoration: "underline",
+                            }}
+                        >
                             Sign Up
                         </Link>
                     </Text>
@@ -113,7 +141,11 @@ function Login() {
 
                 {/* Display error message if any */}
                 {error && (
-                    <Text color={errorColor} mt={4} textAlign="center">
+                    <Text
+                        color={errorColor}
+                        mt={4}
+                        textAlign="center"
+                    >
                         {error}
                     </Text>
                 )}
@@ -135,7 +167,10 @@ function Login() {
                                     required: "Email is required",
                                     validate: {
                                         matchPattern: (value) =>
-                                            /^([\w\.\-_]+)?\w+@[\w-_]+(\.\w+){1,}$/.test(value) || "Email Address Must be valid email address",
+                                            /^([\w\.\-_]+)?\w+@[\w-_]+(\.\w+){1,}$/.test(
+                                                value
+                                            ) ||
+                                            "Email Address Must be valid email address",
                                     },
                                 })}
                             />
@@ -164,7 +199,11 @@ function Login() {
                         </FormControl>
 
                         {/* Submit button */}
-                        <Button type="submit" colorScheme="blue" w="full">
+                        <Button
+                            type="submit"
+                            colorScheme="blue"
+                            w="full"
+                        >
                             Sign in
                         </Button>
                     </VStack>

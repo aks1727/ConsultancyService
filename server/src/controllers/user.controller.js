@@ -2,10 +2,8 @@ import { User } from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import { Education } from "../models/education.model.js";
-import { Experience } from "../models/experience.model.js";
-import { Achievement } from "../models/achievement.model.js";
-import parseDateToUTC from "../utils/dateFormat.js";
+import {parse, isValid} from "date-fns"
+
 
 const accessTokenOptions = {
     httpOnly: true,
@@ -131,103 +129,6 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(201, req.user, "Success"));
 });
 
-// addition methods for user
-const addEducationDetails = asyncHandler(async (req, res) => {
-    const { collegeName, degree, from, to, cgpa } = req.body;
-
-    if (!collegeName || !degree || !from || !to || !cgpa) {
-        throw new ApiError(404, "Missing Credentials");
-    }
-
-    const fromDate = parseDateToUTC(from);
-    const toDate = parseDateToUTC(to);
-
-    if (isNaN(fromDate.getTime())) {
-        throw new ApiError(400, "Invalid date format for 'from' field");
-    }
-    if (isNaN(toDate.getTime())) {
-        throw new ApiError(400, "Invalid date format for 'to' field");
-    }
-
-    const education = await Education.create({
-        userId: req.user._id,
-        collegeName,
-        degree,
-        from: fromDate,
-        to: toDate,
-        cgpa,
-    });
-
-    if (!education) {
-        throw new ApiError(
-            500,
-            "Error occurred while updating education details"
-        );
-    }
-
-    return res
-        .status(200)
-        .json(new ApiResponse(200, education, "Education details updated"));
-});
-const addExperienceDetails = asyncHandler(async (req, res) => {
-    const { title, duration, company, location, description, isWorking } =
-        req.body;
-    if (!title || !duration || !company || !location || !description) {
-        throw new ApiError(404, "Missing Credentials");
-    }
-
-    const working = Boolean(isWorking);
-
-    const experience = await Experience.create({
-        userId: req.user._id,
-        title,
-        duration,
-        company,
-        location,
-        description,
-        isWorking: working,
-    });
-    if (!experience) {
-        throw new ApiError(
-            500,
-            "Error occured while adding  experience details"
-        );
-    }
-
-    return res
-        .status(200)
-        .json(new ApiResponse(200, experience, "Experience added"));
-});
-
-const addAchivementDetails = asyncHandler(async (req, res) => {
-    const { organization, achievementTitle, date, url } = req.body;
-    if (!organization || !achievementTitle || !date || !url) {
-        throw new ApiError(404, "Missing Credentials");
-    }
-    const convertDate = parseDateToUTC(date);
-
-    if (isNaN(convertDate.getTime())) {
-        throw new ApiError(400, "Invalid date format");
-    }
-
-    const achievement = await Achievement.create({
-        userId: req.user._id,
-        organization,
-        achievementTitle,
-        date: convertDate,
-        url,
-    });
-    if (!achievement) {
-        throw new ApiError(
-            500,
-            "Error occured while adding achievement details"
-        );
-    }
-    return res
-        .status(200)
-        .json(new ApiResponse(200, achievement, "Achievement added"));
-});
-
 // updation methods for user
 const updateSkillsDetails = asyncHandler(async (req, res) => {
     const { skills } = req.body;
@@ -242,14 +143,11 @@ const updateSkillsDetails = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found");
     }
 
-    const currentSkills = user.skills || [];
-    const newSkills = skills.filter((skill) => !currentSkills.includes(skill));
-
-    if (newSkills.length === 0) {
-        return res
-            .status(200)
-            .json(new ApiResponse(200, user, "No new skills to update"));
-    }
+    user.skills = skills;
+    user.save({ validateBeforeSave: false });
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user, "No new skills to update"));
 
     const updatedUser = await User.findByIdAndUpdate(
         req.user._id,
@@ -272,61 +170,41 @@ const updateSkillsDetails = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, updatedUser, "Skills details updated"));
 });
 
-const updateAchievements = asyncHandler(async (req, res) => {
-    const { id, organization, achievementTitle, date, url } = req.body;
-    if (!id || !organization || !achievementTitle || !date || !url) {
+const updateEducationDetails = asyncHandler(async (req, res) => {
+    const { education } = req.body;
+
+    if (!education || !Array.isArray(education)) {
         throw new ApiError(404, "Missing Credentials");
     }
-    const convertDate = parseDateToUTC(date);
-    if (isNaN(convertDate.getTime())) {
-        throw new ApiError(400, "Invalid date format");
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+        throw new ApiError(404, "User not found");
     }
-    const achievement = await Achievement.findByIdAndUpdate(
-        id,
-        {
-            organization,
-            achievementTitle,
-            date: convertDate,
-            url,
-        },
-        {
-            new: true,
+    user.educations = education.map((edu) => {
+        const fromDate = parse(edu.from, 'd/M/yyyy', new Date());
+        const toDate = parse(edu.to, 'd/M/yyyy', new Date());
+
+        if (!isValid(fromDate) || !isValid(toDate)) {
+            throw new ApiError(400, "Invalid date format. Use 'DD/MM/YYYY'.");
         }
-    );
-    if (!achievement) {
-        throw new ApiError(
-            500,
-            "Error occured while adding achievement details"
-        );
-    }
+
+        return {
+            ...edu,
+            from: fromDate,
+            to: toDate,
+        };
+    });
+    user.save({ validateBeforeSave: false });
+
     return res
         .status(200)
-        .json(new ApiResponse(200, achievement, "Achievement added"));
+        .json(new ApiResponse(200, user, "Education details updated"));
 });
 
-const updateEducationDetails = asyncHandler(async (req, res) => {
-    const { id, collegeName, degree, from, to, cgpa } = req.body;
-    if (!id || !collegeName || !degree || !from || !to || !cgpa) {
-        throw new ApiError(404, "Missing Credentials");
-    }
-    const fromDate = parseDateToUTC(from);
-    const toDate = parseDateToUTC(to);
-    const education = await Education.findByIdAndUpdate(id, {
-        collegeName,
-        degree,
-        from: fromDate,
-        to: toDate,
-        cgpa,
-    });
-    if (!education) {
-        throw new ApiError(
-            500,
-            "Error occured while updating education details"
-        );
-    }
-    return res
-        .status(200)
-        .json(new ApiResponse(200, education, "Education details updated"));
+const updateAchievements = asyncHandler(async (req, res) => {
+
+
 });
 
 const updateExperienceDetails = asyncHandler(async (req, res) => {
@@ -355,143 +233,6 @@ const updateExperienceDetails = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, experience, "Experience details updated"));
 });
 
-// deleting methods for user
-
-const deleteEducation = asyncHandler(async (req, res) => {
-    const { id } = req.body;
-    if (!id) {
-        throw new ApiError(404, "Missing Credentials");
-    }
-    const user = await User.findById(req.user._id);
-    if (!user) {
-        throw new ApiError(404, "User not found");
-    }
-    const allEducation = await Experience.find({ userId: user._id });
-
-    if (user.isMentor && allEducation.length < 1) {
-        throw new ApiError(
-            403,
-            "Mentors should have atleast one Education data"
-        );
-    }
-    const education = await Education.findByIdAndDelete(id);
-    if (!education) {
-        throw new ApiError(404, "Education not found");
-    }
-    return res
-        .status(200)
-        .json(new ApiResponse(200, education, "Education deleted"));
-});
-
-const deleteExperience = asyncHandler(async (req, res) => {
-    const { id } = req.body;
-    if (!id) {
-        throw new ApiError(404, "Missing Credentials");
-    }
-    const user = await User.findById(req.user._id);
-    if (!user) {
-        throw new ApiError(404, "User not found");
-    }
-    const allExperience = await Experience.find({ userId: user._id });
-    if (user.isMentor && allExperience.length < 1) {
-        throw new ApiError(
-            403,
-            "Mentors should have atleast one Experience data"
-        );
-    }
-    const experience = await Experience.findByIdAndDelete(id);
-    if (!experience) {
-        throw new ApiError(404, "Experience not found");
-    }
-    return res
-        .status(200)
-        .json(new ApiResponse(200, experience, "Experience deleted"));
-});
-
-const deleteAchievement = asyncHandler(async (req, res) => {
-    const { id } = req.body;
-    if (!id) {
-        throw new ApiError(404, "Missing Credentials");
-    }
-    const user = await User.findById(req.user._id);
-    if (!user) {
-        throw new ApiError(404, "User not found");
-    }
-    const allAchievement = await Achievement.find({ userId: user._id });
-    if (user.isMentor && allAchievement.length < 1) {
-        throw new ApiError(
-            403,
-            "Mentors should have atleast one Achievement data"
-        );
-    }
-    const achievement = await Achievement.findByIdAndDelete(id);
-    if (!achievement) {
-        throw new ApiError(404, "Achievement not found");
-    }
-    return res
-        .status(200)
-        .json(new ApiResponse(200, achievement, "Achievement deleted"));
-});
-
-// fetching methods for user 
-
-const getEducationDetails = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
-    if (!user) {
-        throw new ApiError(404, "User not found");
-    }
-    const education = await Education.find({ userId: user._id }).sort({
-        from: -1,
-    });
-    if (!education) {
-        throw new ApiError(
-            500,
-            "Error occurred while fetching education details"
-        );
-    }
-    return res
-        .status(200)
-        .json(new ApiResponse(200, education, "Education details"));
-});
-
-const getExperienceDetails = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
-    if (!user) {
-        throw new ApiError(404, "User not found");
-    }
-    const experience = await Experience.find({ userId: user._id }).sort({
-        from: -1,
-    });
-    if (!experience) {
-        throw new ApiError(
-            500,
-            "Error occurred while fetching experience details"
-        );
-    }
-    return res
-        .status(200)
-        .json(new ApiResponse(200, experience, "Experience details"));
-});
-
-const getAchievementDetails = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
-    if (!user) {
-        throw new ApiError(404, "User not found");
-    }
-    const achievements = await Achievement.find({ userId: user._id }).sort({
-        date: -1,
-    });
-    if (!achievements) {
-        throw new ApiError(
-            500,
-            "Error occurred while fetching achievement details"
-        );
-    }
-    return res
-        .status(200)
-        .json(new ApiResponse(200, achievements, "Achievement details"));
-});
-
 export default {
     // basic authentication
     registerUser,
@@ -505,19 +246,4 @@ export default {
     updateExperienceDetails,
     updateSkillsDetails,
     updateAchievements,
-
-    // adding methods
-    addEducationDetails,
-    addExperienceDetails,
-    addAchivementDetails,
-
-    //deletion methods
-    deleteEducation,
-    deleteExperience,
-    deleteAchievement,
-
-    // fetching details
-    getEducationDetails,
-    getExperienceDetails,
-    getAchievementDetails,
 };

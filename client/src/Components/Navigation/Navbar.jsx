@@ -32,6 +32,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
     const isMobile = useBreakpointValue({ base: true, md: false });
     const userData = useSelector((state) => state.auth.userData);
     const dispatch = useDispatch();
+    // console.log(userData)
     const logoutHandler = async () => {
         try {
             await fetch(`${conf.backendUser}/logout`, {

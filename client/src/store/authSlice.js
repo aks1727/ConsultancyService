@@ -4,9 +4,6 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     status:false,
     userData:null,
-    userEducation :[],
-    userExperience:[],
-    userAchivement:[]
 }
 
 
@@ -23,19 +20,14 @@ const authSlice = createSlice(
                 state.status = false;
                 state.userData = null;
             },
-            updateEducation: (state, action) => {
-                state.userEducation = action.payload
-            },
-            updateExperience: (state, action) => {
-                state.userExperience.push(action.payload)
-            },
-            updateAchivement: (state, action) => {
-                state.userAchivement.push(action.payload)
+            updateDetails:(state)=>{
+                state.status = true;
+                state.userData = action.payload;
             }
         }
     }
 )
 
 
-export const { login, logout, updateEducation, updateExperience, updateAchivement} = authSlice.actions;
+export const { login, logout, updateDetails} = authSlice.actions;
 export default authSlice.reducer;

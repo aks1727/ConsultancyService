@@ -2,6 +2,8 @@ import mongoose, { Schema } from 'mongoose'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
+
+
 const userSchema = new Schema(
     {
         name:{
@@ -13,6 +15,9 @@ const userSchema = new Schema(
             required:true,
             lowercase:true,
             unique:true,
+        },
+        avatar:{
+            type:String,
         },
         email:{
             type:String,
@@ -36,9 +41,74 @@ const userSchema = new Schema(
                 type:String,
             }
         ],
+        gender:{
+            type:String,
+            enum: ['male', 'female', 'other'],
+        },
+        educations:[
+            {
+                collegeName:{
+                    type:String,
+                },
+                degree:{
+                    type:String,
+                },
+                from:{
+                    type:Date,
+                },
+                to:{
+                    type:Date,
+                },
+                cgpa:{
+                    type:String,
+                },
+            }
+        ],
+        experiences:[
+            {
+                title:{
+                    type:String,
+                },
+                duration:{
+                    type:String,
+                },
+                company:{
+                    type:String,
+                },
+                location:{
+                    type:String,
+                },
+                description:{
+                    type:String,
+                },
+                isWorking:{
+                    type:Boolean,
+                    default:false,
+                }
+            }
+        ],
+        achievements:[
+            {
+                organization:{
+                    type:String,
+                },
+                achievementTitle:{
+                    type:String,
+                },
+                date:{
+                    type:Date,
+        
+                },
+                url:{
+                    type:String,
+                }
+            }
+        ],
+        
         refreshToken:{
             type:String,
         },
+
         isMentor:{
             type:Boolean,
             default:false,

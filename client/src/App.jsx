@@ -1,12 +1,11 @@
 import { useDispatch } from "react-redux";
-import { Outlet, useNavigate } from "react-router-dom";
-import { login, updateEducation, updateExperience } from "./store/authSlice";
+import { Outlet } from "react-router-dom";
+import { login} from "./store/authSlice";
 import { useEffect } from "react";
 import conf from "./conf/conf";
 
 function App() {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
 
     const getUser = async () => {
         try {
