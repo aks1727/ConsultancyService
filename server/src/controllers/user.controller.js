@@ -2,16 +2,17 @@ import { User } from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import {parse, isValid} from "date-fns"
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { MentorRequest } from "../models/mentorRequest.model.js";
 
-
+// console.log("user controller")
 const accessTokenOptions = {
     httpOnly: true,
     secure: true,
     sameSite: "None",
     maxAge: 24 * 60 * 60 * 1000,
 };
-
+5;
 const refreshTokenOptions = {
     httpOnly: true,
     secure: true,
@@ -123,6 +124,8 @@ const changeUserPassword = asyncHandler(async (req, res) => {
     }
     user.password = newPassword;
     user.save({ validateBeforeSave: false });
+
+    return res.status(200).json(new ApiResponse(201, {}, "Password updated"));
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
@@ -130,6 +133,72 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 });
 
 // updation methods for user
+
+const updateProfile = asyncHandler(async (req, res) => {
+    const { name, username, email, phoneNumber, bio, gender } = req.body;
+
+    if (!name || !username || !email || !phoneNumber || !bio || !gender) {
+        throw new ApiError(404, "Missing Credentials");
+    }
+
+    const userEmail = await User.findOne({ email });
+    const userUsername = await User.findOne({ username });
+    const userPhoneNumber = await User.findOne({ phoneNumber });
+
+    if (userEmail && userEmail?._id.toString() !== req?.user._id.toString()) {
+        throw new ApiError(403, "Email registered with other user ");
+    }
+    if (
+        userUsername &&
+        userUsername?._id.toString() !== req?.user._id.toString()
+    ) {
+        throw new ApiError(403, "Username registered with other user ");
+    }
+    if (
+        userPhoneNumber &&
+        userPhoneNumber?._id.toString() !== req?.user._id.toString()
+    ) {
+        throw new ApiError(403, "Phone Number registered with other user ");
+    }
+
+    const avatarLocalPath = req.file?.path;
+    let avatar = userEmail.avatar;
+    if (avatarLocalPath) {
+        avatar = await uploadOnCloudinary(avatarLocalPath);
+        if (!avatar?.url) {
+            throw new ApiError(404, "Error uploading avatar to cloudinary");
+        }
+        avatar = avatar.url;
+    }
+    const user1 = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                name,
+                username,
+                email,
+                phoneNumber,
+                bio,
+                gender,
+                avatar,
+            },
+        },
+        {
+            new: true,
+        }
+    ).select("-password -refreshToken");
+
+    if (!user1) {
+        throw new ApiError(
+            500,
+            "Error occurred while updating profile details"
+        );
+    }
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user1, "Profile details updated"));
+});
+
 const updateSkillsDetails = asyncHandler(async (req, res) => {
     const { skills } = req.body;
     console.log(skills);
@@ -138,27 +207,18 @@ const updateSkillsDetails = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Missing Credentials");
     }
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).select(
+        "-password -refreshToken"
+    );
     if (!user) {
         throw new ApiError(404, "User not found");
     }
 
     user.skills = skills;
     user.save({ validateBeforeSave: false });
-    return res
-        .status(200)
-        .json(new ApiResponse(200, user, "No new skills to update"));
 
-    const updatedUser = await User.findByIdAndUpdate(
-        req.user._id,
-        {
-            $push: {
-                skills: { $each: newSkills },
-            },
-        },
-        {
-            new: true,
-        }
+    const updatedUser = await User.findById(req.user._id).select(
+        "-password -refreshToken"
     );
 
     if (!updatedUser) {
@@ -177,15 +237,17 @@ const updateEducationDetails = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Missing Credentials");
     }
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).select(
+        "-password -refreshToken"
+    );
     if (!user) {
         throw new ApiError(404, "User not found");
     }
     user.educations = education.map((edu) => {
-        const fromDate = parse(edu.from, 'd/M/yyyy', new Date());
-        const toDate = parse(edu.to, 'd/M/yyyy', new Date());
+        const fromDate = new Date(edu.from);
+        const toDate = new Date(edu.to);
 
-        if (!isValid(fromDate) || !isValid(toDate)) {
+        if (!fromDate.getTime() || !toDate.getTime()) {
             throw new ApiError(400, "Invalid date format. Use 'DD/MM/YYYY'.");
         }
 
@@ -203,34 +265,96 @@ const updateEducationDetails = asyncHandler(async (req, res) => {
 });
 
 const updateAchievements = asyncHandler(async (req, res) => {
-
-
+    const { achievementDetails } = req.body;
+    if (!achievementDetails || !Array.isArray(achievementDetails)) {
+        throw new ApiError(404, "Missing Credentials");
+    }
+    const user = await User.findById(req.user._id).select(
+        "-password -refreshToken"
+    );
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+    user.achievements = achievementDetails.map((ach) => {
+        const date = new Date(ach.date);
+        if (!date.getTime()) {
+            throw new ApiError(400, "Invalid date format. Use 'DD/MM/YYYY'.");
+        }
+        return {
+            ...ach,
+            date: date,
+        };
+    });
+    user.save({ validateBeforeSave: false });
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user, "Achievements details updated"));
 });
 
 const updateExperienceDetails = asyncHandler(async (req, res) => {
-    const { id, title, duration, company, location, description, isWorking } =
-        req.body;
-    if (!id || !title || !duration || !company || !location || !description) {
+    const { experienceDetails } = req.body;
+    if (!experienceDetails || !Array.isArray(experienceDetails)) {
         throw new ApiError(404, "Missing Credentials");
     }
-    const working = Boolean(isWorking);
-    const experience = await Experience.findByIdAndUpdate(id, {
-        title,
-        duration,
-        company,
-        location,
-        description,
-        isWorking: working,
+    const user = await User.findById(req.user._id).select(
+        "-password -refreshToken"
+    );
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+    user.experiences = experienceDetails.map((exp) => {
+        const working = Boolean(exp.isWorking);
+
+        return {
+            ...exp,
+            isWorking: working,
+        };
     });
-    if (!experience) {
+    user.save({ validateBeforeSave: false });
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user, "Experience details updated"));
+});
+
+const submitMentorRegistrationForm = asyncHandler(async (req, res) => {
+    const { linkedinProfile, resumeLink, whatsappNumber } = req.body;
+    console.log(linkedinProfile, typeof resumeLink, whatsappNumber);
+    if (!whatsappNumber) {
+        throw new ApiError(404, "Missing Credentials");
+    }
+    const user = await User.findById(req.user._id).select(
+        "-password -refreshToken"
+    );
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+    if(user.isMentor==='pending'){
+        throw new ApiError(
+            403,
+            "You have already submitted a mentor registration request"
+        );
+    }
+    user.isMentor = "pending";
+    user.save({ validateBeforeSave: false });
+
+    const mentorRequest = await MentorRequest.create({
+        userId: user._id,
+        linkedinProfile,
+        resumeLink,
+        whatsappNumber,
+    });
+    if (!mentorRequest) {
         throw new ApiError(
             500,
-            "Error occured while updating experience details"
+            "Error occurred while submitting mentor registration request"
         );
     }
     return res
         .status(200)
-        .json(new ApiResponse(200, experience, "Experience details updated"));
+        .json(
+            new ApiResponse(201, user, "Mentor Registration Request submitted")
+        );
 });
 
 export default {
@@ -246,4 +370,6 @@ export default {
     updateExperienceDetails,
     updateSkillsDetails,
     updateAchievements,
+    updateProfile,
+    submitMentorRegistrationForm,
 };

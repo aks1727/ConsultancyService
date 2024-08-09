@@ -21,14 +21,31 @@ import {
 } from "./Components/Forms/index.js";
 
 import { ChakraProvider, Flex } from "@chakra-ui/react";
-import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import {
+    createBrowserRouter,
+    RouterProvider,
+    Navigate,
+} from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/store.js";
 import Signup from "./Components/Signup/Signup.jsx";
 import Login from "./Components/Login/Login.jsx";
 import Layoutone from "./Components/Layout/Layoutone.jsx";
 import NotFound from "./LandingPage/NotFound.jsx";
-import { FaUserEdit, FaTools, FaGraduationCap, FaBriefcase, FaUserCog, FaTrophy } from "react-icons/fa";
+import {
+    FaUserEdit,
+    FaTools,
+    FaGraduationCap,
+    FaBriefcase,
+    FaUserCog,
+    FaTrophy,
+    FaHome,
+} from "react-icons/fa";
+import AdminLayout from "./Components/admin/Layout/AdminLayout.jsx";
+import AdminBase from "./Components/admin/AdminBase.jsx";
+import AdminHome from "./Components/admin/pages/AdminHome.jsx";
+import AdminLogin from "./Components/admin/pages/AdminLogin.jsx";
+import AcceptMentorRequests from "./Components/admin/pages/AcceptMentorRequests.jsx";
 
 const router = createBrowserRouter([
     {
@@ -56,7 +73,7 @@ const router = createBrowserRouter([
                         element: <Roadmaps />,
                     },
                     {
-                        path: "become-mentor",
+                        path: "become-mentor/:stepIndex",
                         element: <BecomeMentor />,
                     },
                     {
@@ -69,7 +86,7 @@ const router = createBrowserRouter([
                 path: "/update-details",
                 element: (
                     <Layoutone
-                    VNavItems={[
+                        VNavItems={[
                             {
                                 label: "Edit Profile",
                                 href: "edit-profile",
@@ -130,7 +147,12 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "",
-                        element: <Navigate to="edit-profile" replace />,
+                        element: (
+                            <Navigate
+                                to="edit-profile"
+                                replace
+                            />
+                        ),
                     },
                 ],
             },
@@ -142,11 +164,78 @@ const router = createBrowserRouter([
                 path: "login",
                 element: <Login />,
             },
+        ],
+    },
+    {
+        path: "/admin62edbdaac78f76f00ef050563669970b",
+        element: <AdminBase />, // AdminBase as the entry point for all admin pages
+        children: [
             {
-                path: "*",
-                element: <NotFound />,
+                path: "/admin62edbdaac78f76f00ef050563669970b",
+                element: (
+                    <AdminLayout
+                        navItems={[
+                            {
+                                label: "Home",
+                                href: "home",
+                                icon: FaHome,
+                            },
+                            {
+                                label: "Accept Mentor Requests",
+                                href: "accept-mentor-requests",
+                                icon: FaUserEdit,
+                            },
+                            {
+                                label: "Manage Mentors",
+                                href: "manage-mentors",
+                                icon: FaTools,
+                            },
+                            {
+                                label: "Users Info",
+                                href: "users-info",
+                                icon: FaGraduationCap,
+                            },
+                        ]}
+                    />
+                ),
+                children: [
+                    {
+                        path: "home",
+                        element: <AdminHome />,
+                    },
+                    {
+                        path: "accept-mentor-requests",
+                        element: <AcceptMentorRequests/>,
+                    },
+                    {
+                        path: "manage-mentors",
+                        element: <h1>Manage Mentors</h1>,
+                    },
+                    {
+                        path: "users-info",
+                        element: <h1>Users Info</h1>,
+                    },
+                    {
+                        path: "",
+                        element: (
+                            <Navigate
+                                to="home"
+                                replace
+                            />
+                        ),
+                    },
+                ],
             },
         ],
+    },
+    {
+        path: "/admin62edbdaac78f76f00ef050563669970b/admin-login",
+        element: <AdminLogin />,
+    },
+
+    {
+        path: "*",
+        element: <NotFound />,
     },
 ]);
 

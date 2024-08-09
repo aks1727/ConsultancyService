@@ -110,8 +110,8 @@ const userSchema = new Schema(
         },
 
         isMentor:{
-            type:Boolean,
-            default:false,
+            type:String,
+            enum:['yes', 'no','pending'],
         },
     },{timestamps:true}
 )

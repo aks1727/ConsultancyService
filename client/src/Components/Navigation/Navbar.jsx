@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     Box,
     Flex,
@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon, SunIcon, MoonIcon } from "@chakra-ui/icons";
 import { logout } from "../../store/authSlice.js";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import conf from "../../conf/conf.js";
 
@@ -31,8 +31,8 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
     const authStatus = useSelector((state) => state.auth.status);
     const isMobile = useBreakpointValue({ base: true, md: false });
     const userData = useSelector((state) => state.auth.userData);
+    const navigate = useNavigate()
     const dispatch = useDispatch();
-    // console.log(userData)
     const logoutHandler = async () => {
         try {
             await fetch(`${conf.backendUser}/logout`, {
@@ -45,6 +45,11 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
             console.log(err.message);
         }
     };
+
+
+    useEffect(()=>{
+        console.log(userData)
+    },[userData])
 
     return (
         <Box
@@ -133,7 +138,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                         />
                         {authStatus ? (
                             <>
-                                {userData?.isMentor ? (
+                                {userData?.isMentor==='yes' ? (
                                     <Button
                                         as={NavLink}
                                         to={"/chats"}
@@ -152,7 +157,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                 ) : (
                                     <Button
                                         as={NavLink}
-                                        to={"/become-mentor"}
+                                        to={ userData?.isMentor ==='pending'? "/become-mentor/3" :"/become-mentor/0"}
                                         fontSize={"sm"}
                                         fontWeight={600}
                                         color={"white"}
@@ -177,7 +182,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                         <Avatar
                                             size={"sm"}
                                             name={userData?.name}
-                                            src={"https://bit.ly/broken-link"}
+                                            src={userData?.avatar}
                                         />
                                     </MenuButton>
                                     <MenuList>
@@ -252,7 +257,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                             ) : (
                                 <Button
                                     as={NavLink}
-                                    to={"/become-mentor"}
+                                    to={"/become-mentor/0"}
                                     fontSize={"sm"}
                                     fontWeight={600}
                                     color={"white"}
@@ -278,7 +283,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                     <Avatar
                                         size={"sm"}
                                         name={userData?.name}
-                                        src={"https://bit.ly/broken-link"}
+                                        src={userData?.avatar}
                                     />
                                 </MenuButton>
                                 <MenuList>

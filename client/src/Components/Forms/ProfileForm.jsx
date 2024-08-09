@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
-    Container,
     Box,
     Flex,
     Avatar,
@@ -19,25 +18,61 @@ import {
 } from "@chakra-ui/react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import conf from "../../conf/conf.js";
+import login from "../../store/authSlice.js";
 
 const ProfileForm = () => {
     const userData = useSelector((state) => state.auth.userData);
-
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const {
         register,
         handleSubmit,
         control,
         formState: { errors },
-    } = useForm();
+        setValue,
+    } = useForm({
+        defaultValues: {
+            name: userData?.name || "",
+            username: userData?.username || "",
+            email: userData?.email || "",
+            phoneNumber: userData?.phoneNumber || "",
+            bio: userData?.bio || "",
+            gender: userData?.gender || "",
+            avatar: userData?.avatar || "",
+        },
+    });
+
     const [avatarPreview, setAvatarPreview] = useState(
         userData?.avatar || null
     );
     const [error, setError] = useState("");
 
-    const submit = (data) => {
+    const submit = async (data) => {
         console.log(data);
-        setError("");
+        const formData = new FormData();
+        Object.keys(data).forEach((key) => {
+            formData.append(key, data[key]);
+            // console.log(key, data[key]
+        });
+        const res = await fetch(`${conf.backendUser}/updateProfile`, {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+        });
+        if (!res.ok) {
+            setError("Something went wrong updating profile");
+            return;
+        }
+        const responseData = await res.json();
+        if (!responseData) {
+            setError("Failed to update profile");
+            return;
+        }
+        console.log(responseData.data)
+        dispatch(login(responseData.data));
+        navigate("/update-details/edit-education");
     };
 
     const handleAvatarChange = (e) => {
@@ -46,6 +81,7 @@ const ProfileForm = () => {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setAvatarPreview(reader.result);
+                setValue("avatar", file); // Store the file in the form state
             };
             reader.readAsDataURL(file);
         }
@@ -56,12 +92,13 @@ const ProfileForm = () => {
     const textColor = useColorModeValue("black", "white");
     const linkColor = useColorModeValue("blue.500", "blue.300");
 
-;
 
+    useEffect(()=>{console.log(userData)},[userData])
     return (
         <Flex
-            align={"center"}
+            align="center"
             justify={["flex-start", "center"]}
+            pb={10}
         >
             <Box
                 w="full"
@@ -91,8 +128,8 @@ const ProfileForm = () => {
                     Edit Your Profile
                 </Text>
                 <form onSubmit={handleSubmit(submit)}>
-                    <VStack spacing={2}>
-                        <FormControl>
+                    <VStack spacing={4}>
+                        <FormControl isInvalid={errors.avatar}>
                             <FormLabel htmlFor="avatar">
                                 <Flex>
                                     <Avatar
@@ -112,17 +149,29 @@ const ProfileForm = () => {
                                         />
                                         <FormLabel
                                             htmlFor="avatar"
-                                            cursor={"pointer"}
+                                            cursor="pointer"
                                         >
-                                            Update Image
+                                            Update Image{" "}
+                                            <Text
+                                                as="span"
+                                                color="red"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
-                                        <Text>Recommended 400x400</Text>
+                                        <Text fontSize="sm">
+                                            Recommended 400x400
+                                        </Text>
+                                        <FormErrorMessage>
+                                            {errors.avatar &&
+                                                errors.avatar.message}
+                                        </FormErrorMessage>
                                     </Box>
                                 </Flex>
                             </FormLabel>
                         </FormControl>
-                        <FormControl isInvalid={errors.fullName}>
-                            <FormLabel htmlFor="fullName">
+                        <FormControl isInvalid={errors.name}>
+                            <FormLabel htmlFor="name">
                                 Full Name{" "}
                                 <Text
                                     as="span"
@@ -132,15 +181,14 @@ const ProfileForm = () => {
                                 </Text>
                             </FormLabel>
                             <Input
-                                id="fullName"
+                                id="name"
                                 type="text"
-                                defaultValue={userData?.name}
-                                {...register("fullName", {
+                                {...register("name", {
                                     required: "Full Name is required",
                                 })}
                             />
                             <FormErrorMessage>
-                                {errors.fullName && errors.fullName.message}
+                                {errors.name && errors.name.message}
                             </FormErrorMessage>
                         </FormControl>
                         <FormControl isInvalid={errors.username}>
@@ -156,7 +204,6 @@ const ProfileForm = () => {
                             <Input
                                 id="username"
                                 type="text"
-                                defaultValue={userData?.username}
                                 {...register("username", {
                                     required: "Username is required",
                                 })}
@@ -178,7 +225,6 @@ const ProfileForm = () => {
                             <Input
                                 id="email"
                                 type="email"
-                                defaultValue={userData?.email}
                                 {...register("email", {
                                     required: "Email is required",
                                 })}
@@ -200,7 +246,6 @@ const ProfileForm = () => {
                             <Input
                                 id="phoneNumber"
                                 type="tel"
-                                defaultValue={userData?.phoneNumber}
                                 {...register("phoneNumber", {
                                     required: "Phone Number is required",
                                 })}
@@ -223,7 +268,6 @@ const ProfileForm = () => {
                             <Input
                                 id="bio"
                                 type="text"
-                                defaultValue={userData?.bio}
                                 {...register("bio", {
                                     required: "Bio is required",
                                 })}

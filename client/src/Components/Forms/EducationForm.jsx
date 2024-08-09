@@ -16,7 +16,7 @@ import {
 import { AddIcon, DeleteIcon, EditIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateDetails } from '../../store/authSlice';
+import { login } from '../../store/authSlice.js';
 import conf from "../../conf/conf";
 import AlertModal from '../alerts/AlertModal'; // Adjust the import path accordingly
 
@@ -29,12 +29,28 @@ const EducationForm = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [formError, setFormError] = useState('');
 
-    const { handleSubmit, control, reset, formState: { errors }, getValues, setValue } = useForm({
+    const formatDateToInput = (date) => {
+        const d = new Date(date);
+        const day = (`0${d.getDate()}`).slice(-2);
+        const month = (`0${d.getMonth() + 1}`).slice(-2);
+        const year = d.getFullYear();
+        return `${year}-${month}-${day}`;  // Converts to 'YYYY-MM-DD'
+    };
+
+    const formatDateToDisplay = (date) => {
+        const d = new Date(date);
+        const day = (`0${d.getDate()}`).slice(-2);
+        const month = (`0${d.getMonth() + 1}`).slice(-2);
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;  // Converts to 'DD/MM/YYYY'
+    };
+
+    const { handleSubmit, control, reset, formState: { errors }, getValues, setValue, clearErrors } = useForm({
         defaultValues: {
             education: education?.length > 0 ? education.map(ed => ({
                 ...ed,
-                from: ed.from ? new Date(ed.from).toISOString().split("T")[0] : "",
-                to: ed.to ? new Date(ed.to).toISOString().split("T")[0] : "",
+                from: ed.from ? formatDateToInput(ed.from) : "",
+                to: ed.to ? formatDateToInput(ed.to) : "",
             })) : [],
         },
     });
@@ -44,13 +60,17 @@ const EducationForm = () => {
         name: "education",
     });
 
+    
+
+
+
     useEffect(() => {
         if (education?.length > 0) {
             reset({
                 education: education.map(ed => ({
                     ...ed,
-                    from: ed.from ? new Date(ed.from).toISOString().split("T")[0] : "",
-                    to: ed.to ? new Date(ed.to).toISOString().split("T")[0] : "",
+                    from: ed.from ? formatDateToInput(ed.from) : "",
+                    to: ed.to ? formatDateToInput(ed.to) : "",
                 }))
             });
         }
@@ -76,7 +96,7 @@ const EducationForm = () => {
             );
             if (response.ok) {
                 const responseData = await response.json();
-                dispatch(updateDetails(responseData.data));
+                dispatch(login(responseData.data));
                 navigate('/update-details/edit-experience');
             } else {
                 throw new Error("Education fetch error");
@@ -87,12 +107,7 @@ const EducationForm = () => {
         }
     };
 
-    const formatDate = (date) => {
-        if (!date) return "";
-        const d = new Date(date);
-        return d.toISOString().split("T")[0];  // Converts to 'YYYY-MM-DD'
-    };
-
+    
     const handleCheckClick = (index) => {
         const values = getValues();
         const educationFields = values.education;
@@ -106,9 +121,11 @@ const EducationForm = () => {
         console.log('Is Valid:', isValid); // Debugging
 
         if (isValid) {
+            // Update the fields array with the new values
+            fields[index] = educationFields[index];
+            clearErrors(`education[${index}]`); // Clear errors for the current field
+
             setEditingIndex(-1); // End editing mode
-            // Update form values after validation if needed
-            // Example: setValue(`education[${index}].collegeName`, values.education[index].collegeName);
         } else {
             setAlertMessage("Please fill all required fields.");
             setIsAlertOpen(true);
@@ -121,9 +138,10 @@ const EducationForm = () => {
             const originalData = education[index];
             setValue(`education[${index}].collegeName`, originalData.collegeName);
             setValue(`education[${index}].degree`, originalData.degree);
-            setValue(`education[${index}].from`, originalData.from ? new Date(originalData.from).toISOString().split("T")[0] : "");
-            setValue(`education[${index}].to`, originalData.to ? new Date(originalData.to).toISOString().split("T")[0] : "");
+            setValue(`education[${index}].from`, originalData.from ? formatDateToInput(originalData.from) : "");
+            setValue(`education[${index}].to`, originalData.to ? formatDateToInput(originalData.to) : "");
             setValue(`education[${index}].cgpa`, originalData.cgpa);
+            clearErrors(`education[${index}]`); // Clear errors for the current field
         } else {
             remove(index); // If there was no original data, remove the entry
         }
@@ -300,8 +318,8 @@ const EducationForm = () => {
                                 <>
                                     <Text><b>University or College:</b> {item.collegeName}</Text>
                                     <Text><b>Degree or Specialization:</b> {item.degree}</Text>
-                                    <Text><b>From:</b> {formatDate(item.from)}</Text>
-                                    <Text><b>To:</b> {formatDate(item.to)}</Text>
+                                    <Text><b>From:</b> {formatDateToDisplay(item.from)}</Text>
+                                    <Text><b>To:</b> {formatDateToDisplay(item.to)}</Text>
                                     <Text><b>CGPA or Percentage:</b> {item.cgpa}</Text>
                                 </>
                             )}

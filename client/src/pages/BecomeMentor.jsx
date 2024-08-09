@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     Box,
     Button,
@@ -19,19 +19,21 @@ import {
     useBreakpointValue,
 } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
+import { useParams, useNavigate, NavLink } from "react-router-dom";
 import MentorBenefits from "../Components/BecomeMentor/MentorBenefits";
 import MentorUpdateDetails from "../Components/BecomeMentor/MentorUpdateDetails";
+import DetailsSharing from "../Components/BecomeMentor/DetailsSharing";
 
 const StepContent = ({ stepIndex }) => {
     switch (stepIndex) {
         case 0:
-            return <MentorBenefits/>;
+            return <MentorBenefits />;
         case 1:
-            return <MentorUpdateDetails/>;
+            return <MentorUpdateDetails />;
         case 2:
-            return <Box p={4}><Text fontSize="xl">Select Rooms Component</Text><Text>Some more information about room selection.</Text></Box>;
+            return <DetailsSharing/>;
         case 3:
-            return <Box p={4}><Text fontSize="xl">Confirmation Component</Text><Text>Some more information about the confirmation process.</Text></Box>;
+            return <Box p={4}><Text fontSize="xl" mb={4}>Application for become mentor has been submitted </Text><Text>It will take upto 24 hours to verify the provided details <NavLink to={'/feed'}><Text color={'blue.500'}>Go Back</Text></NavLink></Text></Box>;
         default:
             return null;
     }
@@ -41,25 +43,30 @@ function BecomeMentor() {
     const steps = [
         { title: "Become mentor ", description: "Start your journey as Mentor" },
         { title: "Update Details", description: "Verification" },
-        { title: "Third", description: "tmp" },
-        { title: "Fourth", description: "Confirmation" },
+        { title: "Details Sharing", description: "" },
+        { title: "Verifying", description: "Confirmation" },
     ];
 
+    const { stepIndex } = useParams();
+    const navigate = useNavigate();
     const { activeStep, setActiveStep } = useSteps({
-        index: 0,
+        index: Number(stepIndex),
         count: steps.length,
     });
 
+    useEffect(() => {
+        setActiveStep(Number(stepIndex));
+    }, [stepIndex, setActiveStep]);
 
     const nextStep = () => {
         if (activeStep < steps.length - 1) {
-            setActiveStep(activeStep + 1);
+            navigate(`/become-mentor/${activeStep + 1}`);
         }
     };
 
     const prevStep = () => {
         if (activeStep > 0) {
-            setActiveStep(activeStep - 1);
+            navigate(`/become-mentor/${activeStep - 1}`);
         }
     };
 
@@ -95,17 +102,19 @@ function BecomeMentor() {
             <Box>
                 <SlideFade key={activeStep} in={true}>
                     <VStack spacing={4}>
-                        <StepContent stepIndex={activeStep}/>
+                        <StepContent stepIndex={activeStep} />
                         <Flex mt={4} mb={8} justify="space-between" w="100%">
                             <Button
                                 onClick={prevStep}
                                 isDisabled={activeStep === 0}
+                                {... activeStep === 0 ? ({visibility:'hidden'}) :({})}
                             >
                                 Previous
                             </Button>
                             <Button
                                 onClick={nextStep}
-                                isDisabled={(activeStep === steps.length - 1) || (activeStep==1 && isDisable) }
+                                isDisabled={(activeStep === steps.length - 1) || (activeStep == 1 && isDisable)}
+                                {... (activeStep === steps.length-1 || activeStep ===steps.length-2) ? ({visibility:'hidden'}) :({})}
                             >
                                 Next
                             </Button>

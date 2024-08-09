@@ -49,8 +49,9 @@ const VNavbar = ({ navItems = DEFAULT_NAV_ITEMS }) => {
     if (navItems.length === 0) {
         navItems = DEFAULT_NAV_ITEMS;
     }
-    const primaryNavItems = navItems.length > 4 ? navItems.slice(0, 3) : navItems;
-    const additionalNavItems = navItems.length > 4 ? navItems.slice(3) : [];
+    const primaryNavItems = (navItems.length > 4 ? navItems.slice(0, 3) : navItems) || [];
+    const additionalNavItems = (navItems.length > 4 ? navItems.slice(3) : []) || [];
+
 
     return (
         <Box>
@@ -88,7 +89,7 @@ const VNavbar = ({ navItems = DEFAULT_NAV_ITEMS }) => {
                         justifyContent="space-around"
                         py={1} // Reduced padding
                     >
-                        {primaryNavItems.map((navItem) => (
+                        {primaryNavItems?.map((navItem) => (
                             <NavItem key={navItem.label} to={navItem.href} icon={navItem.icon} label={navItem.label} />
                         ))}
                         {additionalNavItems.length > 0 && (

@@ -7,6 +7,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.static("public"))
 
 app.get('/', (req, res) => {
     res.send("Hii there welcom in my backend")
@@ -19,8 +20,9 @@ app.use(cors({
 }));
 
 import userRouter from './routes/user.routes.js';
-
+import adminRouter from './routes/admin.routes.js';
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/admin',adminRouter)
 
 
 
