@@ -1,12 +1,12 @@
 import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
 import { login} from "./store/authSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import conf from "./conf/conf";
-
+import Loader from "./Components/Loader/Loader.jsx"
 function App() {
     const dispatch = useDispatch();
-
+    const [isloader, setIsloader] = useState(false)
     const getUser = async () => {
         try {
             const response = await fetch(`${conf.backendUser}/currentUser`, {
@@ -33,10 +33,14 @@ function App() {
     };
 
     useEffect(() => {
+        setIsloader(true)
         getUser();
+        setTimeout(() => {
+            setIsloader(false)
+        }, 1000);
     }, []);
 
-    return (
+    return isloader ? (<Loader/>) : (
         <>
             <Outlet />
         </>

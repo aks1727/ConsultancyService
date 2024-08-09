@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import conf from "../../conf/conf.js";
 import { useDispatch } from "react-redux";
@@ -7,10 +7,12 @@ import { login } from "../../store/authSlice.js";
 import { adminBaseUrl } from "./AdminConstant.js";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import Loader from "../Loader/Loader.jsx";
+
 function AdminBase() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
+    const [isloader, setIsloader] = useState(false)
     useGSAP(() => {
         gsap.to("#welcome", {
             duration: 2,
@@ -40,10 +42,14 @@ function AdminBase() {
     };
 
     useEffect(() => {
+        setIsloader(true);
         getCurrentAdmin();
+        setTimeout(() => {
+            setIsloader(false);
+        }, 1000);
     }, []);
 
-    return <Outlet />;
+    return isloader? <Loader/>:<Outlet />;
 }
 
 export default AdminBase;

@@ -9,13 +9,9 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import Navbar from "../Components/Navigation/Navbar";
-import Loader from "../Components/Loader/Loader";
 import Card from "../Components/Card/Card";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
 
 function Home() {
-    const [isLoader, setIsLoader] = useState(false);
     const bgHeader = useColorModeValue("blue.100", "blue.900");
     const textColor = useColorModeValue("black", "white");
     const boxBg = useColorModeValue("blue.100", "blue.900");
@@ -30,17 +26,9 @@ function Home() {
     const cardBg7 = useColorModeValue("teal.200", "teal.500");
     const cardBg8 = useColorModeValue("pink.100", "pink.600");
     const cardTextColor = useColorModeValue("black", "white");
-    useEffect(() => {
-        setIsLoader(true);
-        setTimeout(() => {
-            setIsLoader(false);
-        }, 2000);
-    }, []);
 
 
-    return isLoader ? (
-        <Loader />
-    ) : (
+    return (
         <>
             <Navbar
                 NAV_ITEMS={[
