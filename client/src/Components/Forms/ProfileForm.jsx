@@ -20,12 +20,14 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import conf from "../../conf/conf.js";
-import login from "../../store/authSlice.js";
+import {login} from "../../store/authSlice.js";
+import Loader from "../Loader/Loader.jsx"
 
 const ProfileForm = () => {
     const userData = useSelector((state) => state.auth.userData);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [isLoader, setIsLoader] = useState(false)
     const {
         register,
         handleSubmit,
@@ -50,7 +52,7 @@ const ProfileForm = () => {
     const [error, setError] = useState("");
 
     const submit = async (data) => {
-        console.log(data);
+        setIsLoader(true)
         const formData = new FormData();
         Object.keys(data).forEach((key) => {
             formData.append(key, data[key]);
@@ -71,9 +73,10 @@ const ProfileForm = () => {
             return;
         }
         if (responseData && responseData.data) {
-            console.log(responseData.data);
+            // console.log(responseData.data);
             dispatch(login(responseData.data))
         }
+        setIsLoader(false)
     };
 
     const handleAvatarChange = (e) => {
@@ -93,10 +96,7 @@ const ProfileForm = () => {
     const textColor = useColorModeValue("black", "white");
     const linkColor = useColorModeValue("blue.500", "blue.300");
 
-    useEffect(() => {
-        console.log(userData);
-    }, [userData]);
-    return (
+    return isLoader? <Loader/> :(
         <Flex
             align="center"
             justify={["flex-start", "center"]}
