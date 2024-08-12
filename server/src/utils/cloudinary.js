@@ -1,31 +1,39 @@
 import { v2 as cloudinary } from "cloudinary";
-import fs from 'fs'
+
+import dotenv from 'dotenv'
+
+dotenv.config({ path: './.env' }); // Load environment variables from.env file
+
+
 
 cloudinary.config({
-    cloud_name: 'dytuks2qs',
-    api_key:'688561455755436',
-    api_secret: 'U3eL7QTqkR-OT64J8aOTbHxB0AI'
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadOnCloudinary = async (fileBuffer, fileName) => {
     try {
-        if (!localFilePath) {
+        if (!fileBuffer) {
             return null;
         }
-        // upload the file on cloudinary 
-        console.log(`Trying  upload ${localFilePath}`)
-        const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "auto"
-        })
-        // file has been uploaded successfully 
-        // console.log("file is uploaded on cloudinary",response.url)
-        // console.log("Cloudinary response",response)
-        console.log(`Successful upload of ${localFilePath}`)
-        fs.unlinkSync(localFilePath);
+
+        // Convert buffer to base64 string
+        const base64Image = fileBuffer.toString('base64');
+        const mimeType = 'image/jpeg'; // Adjust if necessary based on your file type
+
+        // Upload the file on Cloudinary
+        console.log(`Trying to upload file`);
+
+        const response = await cloudinary.uploader.upload(`data:${mimeType};base64,${base64Image}`, {
+            resource_type: "auto",
+            public_id: fileName // Optional: you can specify a unique public ID for the file
+        });
+
+        console.log(`Successful upload of file`);
         return response;
     } catch (error) {
-        console.log('error',error)
-        fs.unlinkSync(localFilePath) // remove the locallly saved temporary file as the upload operation got failed
+        console.log('Error', error);
         return null;
     }
 }

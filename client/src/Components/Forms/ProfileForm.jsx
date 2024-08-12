@@ -70,9 +70,10 @@ const ProfileForm = () => {
             setError("Failed to update profile");
             return;
         }
-        console.log(responseData.data)
-        dispatch(login(responseData.data));
-        navigate("/update-details/edit-education");
+        if (responseData && responseData.data) {
+            console.log(responseData.data);
+            dispatch(login(responseData.data))
+        }
     };
 
     const handleAvatarChange = (e) => {
@@ -92,8 +93,9 @@ const ProfileForm = () => {
     const textColor = useColorModeValue("black", "white");
     const linkColor = useColorModeValue("blue.500", "blue.300");
 
-
-    useEffect(()=>{console.log(userData)},[userData])
+    useEffect(() => {
+        console.log(userData);
+    }, [userData]);
     return (
         <Flex
             align="center"

@@ -238,7 +238,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                         align={"center"}
                     >
                         {authStatus &&
-                            (userData.isMentor ? (
+                            (userData?.isMentor ? (
                                 <Button
                                     as={NavLink}
                                     to={"/chats"}

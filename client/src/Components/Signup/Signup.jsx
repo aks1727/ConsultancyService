@@ -28,6 +28,13 @@ function Signup() {
                     credentials:'include'
                 }
             );
+            if(!response.ok){
+                console.log()
+                const error = await response.json()
+                console.log(error)
+                
+                throw new Error(error.message)
+            }
             const userData = await response.json();
             dispatch(authLogin(userData.data))
             navigate("/feed");

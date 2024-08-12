@@ -41,9 +41,17 @@ const registerUser = asyncHandler(async (req, res) => {
     if (!email || !username || !password || !phoneNumber || !name) {
         throw new ApiError(404, "Missing Credentials");
     }
-    const userExist = await User.findOne({ email });
+    const emailExist = await User.findOne({ email });
+    if (emailExist) {
+        throw new ApiError(403, "Email already registered with other user");
+    }
+    const usernameExist = await User.findOne({username})
+    if (usernameExist) {
+        throw new ApiError(403, "Username already registered with other user");
+    }
+    const userExist = await User.findOne({ phoneNumber });
     if (userExist) {
-        throw new ApiError(403, "User already Exists");
+        throw new ApiError(403, "Phone Number already registered with other user");
     }
     const user = await User.create({
         name,
@@ -146,31 +154,37 @@ const updateProfile = asyncHandler(async (req, res) => {
     const userPhoneNumber = await User.findOne({ phoneNumber });
 
     if (userEmail && userEmail?._id.toString() !== req?.user._id.toString()) {
-        throw new ApiError(403, "Email registered with other user ");
+        throw new ApiError(403, "Email registered with other user");
     }
     if (
         userUsername &&
         userUsername?._id.toString() !== req?.user._id.toString()
     ) {
-        throw new ApiError(403, "Username registered with other user ");
+        throw new ApiError(403, "Username registered with other user");
     }
     if (
         userPhoneNumber &&
         userPhoneNumber?._id.toString() !== req?.user._id.toString()
     ) {
-        throw new ApiError(403, "Phone Number registered with other user ");
+        throw new ApiError(403, "Phone Number registered with other user");
     }
 
-    const avatarLocalPath = req.file?.path;
     let avatar = userEmail.avatar;
-    if (avatarLocalPath) {
-        avatar = await uploadOnCloudinary(avatarLocalPath);
-        if (!avatar?.url) {
-            throw new ApiError(404, "Error uploading avatar to cloudinary");
+
+    if (req.file) {
+        // Convert the file buffer to a base64 string for Cloudinary
+        const avatarBuffer = req.file.buffer.toString('base64');
+
+        // Upload to Cloudinary (assuming uploadOnCloudinary handles base64 data)
+        const uploadResponse = await uploadOnCloudinary(avatarBuffer);
+
+        if (!uploadResponse?.url) {
+            throw new ApiError(404, "Error uploading avatar to Cloudinary");
         }
-        avatar = avatar.url;
+        avatar = uploadResponse.url;
     }
-    const user1 = await User.findByIdAndUpdate(
+
+    const updatedUser = await User.findByIdAndUpdate(
         req.user._id,
         {
             $set: {
@@ -188,15 +202,16 @@ const updateProfile = asyncHandler(async (req, res) => {
         }
     ).select("-password -refreshToken");
 
-    if (!user1) {
+    if (!updatedUser) {
         throw new ApiError(
             500,
             "Error occurred while updating profile details"
         );
     }
+
     return res
         .status(200)
-        .json(new ApiResponse(200, user1, "Profile details updated"));
+        .json(new ApiResponse(200, updatedUser, "Profile details updated"));
 });
 
 const updateSkillsDetails = asyncHandler(async (req, res) => {
