@@ -1,12 +1,16 @@
-import React from 'react'
-import Navbar from '../Components/Navigation/Navbar'
-import VNavbar from '../Components/Navigation/VNavBar'
+import React from "react";
+import { useSearchParams } from "react-router-dom";
+
 function Search() {
-  return (
-    <>
-        Search
-    </>
-  )
+    const [searchParams] = useSearchParams();
+    const category = searchParams.get("category");
+
+    return (
+        <div>
+            <h1>Search Results for: {category}</h1>
+            {/* Implement logic to fetch and display mentors based on the category */}
+        </div>
+    );
 }
 
-export default Search
+export default Search;

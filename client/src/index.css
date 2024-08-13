@@ -9,9 +9,9 @@
 }
 
 
-body{
-  color:white;
-  height:100vh;
-  width: 100vw;
+body {
+  color: white;
+  min-height: 100vh;  /* Changed from height to min-height */
+  width: 100%;
+  /* overflow-x: hidden;  Added to prevent horizontal overflow */
 }
-
