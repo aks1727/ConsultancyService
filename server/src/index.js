@@ -6,7 +6,6 @@ dotenv.config({
 
 import connectDb from './db/db1.js';
 import app from './app.js';
-
 // console.log(process.env, "index");
 
 /**
@@ -16,7 +15,7 @@ import app from './app.js';
 connectDb()
     .then(() => {
         app.listen(process.env.PORT || 8000, () => 
-            console.log(`Server listening on http://localhost:${process.env.PORT}`)
+            console.log(`Server listening on http://localhost:${process.env.PORT}`.yellow)
         );
         app.on('error', (err) => {
             console.log(err.message);
