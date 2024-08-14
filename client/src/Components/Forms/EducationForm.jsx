@@ -12,9 +12,10 @@ import {
     IconButton,
     Alert,
     AlertIcon,
+    useColorModeValue,
 } from "@chakra-ui/react";
-import { AddIcon, DeleteIcon, EditIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
-import { useNavigate } from 'react-router-dom';
+import { AddIcon, DeleteIcon, EditIcon, CheckIcon, CloseIcon, ArrowBackIcon } from "@chakra-ui/icons";
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../store/authSlice.js';
 import conf from "../../conf/conf";
@@ -152,8 +153,31 @@ const EducationForm = () => {
         setIsAlertOpen(false);
     };
 
+    const linkColor = useColorModeValue("blue.500", "blue.300");
     return (
-        <Box maxW="600px" mx="auto" p={4} pb={20}>
+        <Box
+            maxW="600px"
+            mx="auto"
+            p={4}
+            pb={20}
+        >
+            <NavLink to="/feed">
+                <Button
+                    leftIcon={<ArrowBackIcon />}
+                    variant="link"
+                    mb={4}
+                    color={linkColor}
+                >
+                    Back To Application
+                </Button>
+            </NavLink>
+            <Text
+                fontSize={"2xl"}
+                fontWeight={"bold"}
+                mb={"2"}
+            >
+                Edit Your Education details
+            </Text>
             <Button
                 leftIcon={<AddIcon />}
                 colorScheme="teal"
@@ -173,15 +197,30 @@ const EducationForm = () => {
             </Button>
             <form onSubmit={handleSubmit(onSubmit)}>
                 {formError && (
-                    <Alert status="error" mb={4}>
+                    <Alert
+                        status="error"
+                        mb={4}
+                    >
                         <AlertIcon />
                         {formError}
                     </Alert>
                 )}
                 {fields.map((item, index) => (
-                    <Box key={item.id} mt={4} p={4} borderWidth="1px" borderRadius="lg">
-                        <VStack spacing={4} align="flex-start">
-                            <HStack justify="space-between" width="100%">
+                    <Box
+                        key={item.id}
+                        mt={4}
+                        p={4}
+                        borderWidth="1px"
+                        borderRadius="lg"
+                    >
+                        <VStack
+                            spacing={4}
+                            align="flex-start"
+                        >
+                            <HStack
+                                justify="space-between"
+                                width="100%"
+                            >
                                 <Text fontWeight="bold">
                                     Education {index + 1}
                                 </Text>
@@ -191,7 +230,9 @@ const EducationForm = () => {
                                             <IconButton
                                                 icon={<EditIcon />}
                                                 colorScheme="teal"
-                                                onClick={() => setEditingIndex(index)}
+                                                onClick={() =>
+                                                    setEditingIndex(index)
+                                                }
                                             />
                                             <IconButton
                                                 icon={<DeleteIcon />}
@@ -204,133 +245,248 @@ const EducationForm = () => {
                             </HStack>
                             {editingIndex === index ? (
                                 <>
-                                    <FormControl isInvalid={errors.education?.[index]?.collegeName}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.education?.[index]
+                                                ?.collegeName
+                                        }
+                                    >
                                         <FormLabel>
                                             University or College{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`education[${index}].collegeName`}
                                             control={control}
-                                            rules={{ required: "University or College is required" }}
+                                            rules={{
+                                                required:
+                                                    "University or College is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input placeholder="Search your University or College" {...field} />
+                                                <Input
+                                                    placeholder="Search your University or College"
+                                                    {...field}
+                                                />
                                             )}
                                         />
-                                        {errors.education?.[index]?.collegeName && (
+                                        {errors.education?.[index]
+                                            ?.collegeName && (
                                             <Text color="red.500">
-                                                {errors.education[index].collegeName.message}
+                                                {
+                                                    errors.education[index]
+                                                        .collegeName.message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
-                                    <FormControl isInvalid={errors.education?.[index]?.degree}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.education?.[index]?.degree
+                                        }
+                                    >
                                         <FormLabel>
                                             Degree or Specialization{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`education[${index}].degree`}
                                             control={control}
-                                            rules={{ required: "Degree or Specialization is required" }}
+                                            rules={{
+                                                required:
+                                                    "Degree or Specialization is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input placeholder="Select your Degree or Specialization" {...field} />
+                                                <Input
+                                                    placeholder="Select your Degree or Specialization"
+                                                    {...field}
+                                                />
                                             )}
                                         />
                                         {errors.education?.[index]?.degree && (
                                             <Text color="red.500">
-                                                {errors.education[index].degree.message}
+                                                {
+                                                    errors.education[index]
+                                                        .degree.message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
-                                    <FormControl isInvalid={errors.education?.[index]?.from}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.education?.[index]?.from
+                                        }
+                                    >
                                         <FormLabel>
                                             From{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`education[${index}].from`}
                                             control={control}
-                                            rules={{ required: "From date is required" }}
+                                            rules={{
+                                                required:
+                                                    "From date is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input type="date" {...field} />
+                                                <Input
+                                                    type="date"
+                                                    {...field}
+                                                />
                                             )}
                                         />
                                         {errors.education?.[index]?.from && (
                                             <Text color="red.500">
-                                                {errors.education[index].from.message}
+                                                {
+                                                    errors.education[index].from
+                                                        .message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
-                                    <FormControl isInvalid={errors.education?.[index]?.to}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.education?.[index]?.to
+                                        }
+                                    >
                                         <FormLabel>
                                             To{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`education[${index}].to`}
                                             control={control}
-                                            rules={{ required: "To date is required" }}
+                                            rules={{
+                                                required: "To date is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input type="date" {...field} />
+                                                <Input
+                                                    type="date"
+                                                    {...field}
+                                                />
                                             )}
                                         />
                                         {errors.education?.[index]?.to && (
                                             <Text color="red.500">
-                                                {errors.education[index].to.message}
+                                                {
+                                                    errors.education[index].to
+                                                        .message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
-                                    <FormControl isInvalid={errors.education?.[index]?.cgpa}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.education?.[index]?.cgpa
+                                        }
+                                    >
                                         <FormLabel>
                                             CGPA or Percentage{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`education[${index}].cgpa`}
                                             control={control}
-                                            rules={{ required: "CGPA or Percentage is required" }}
+                                            rules={{
+                                                required:
+                                                    "CGPA or Percentage is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input type="text" {...field} />
+                                                <Input
+                                                    type="text"
+                                                    {...field}
+                                                />
                                             )}
                                         />
                                         {errors.education?.[index]?.cgpa && (
                                             <Text color="red.500">
-                                                {errors.education[index].cgpa.message}
+                                                {
+                                                    errors.education[index].cgpa
+                                                        .message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
-                                    <HStack width="100%" justifyContent="space-between">
+                                    <HStack
+                                        width="100%"
+                                        justifyContent="space-between"
+                                    >
                                         <IconButton
                                             icon={<CheckIcon />}
                                             colorScheme="teal"
                                             width="48%"
-                                            onClick={() => handleCheckClick(index)}
+                                            onClick={() =>
+                                                handleCheckClick(index)
+                                            }
                                         />
                                         <IconButton
                                             icon={<CloseIcon />}
                                             colorScheme="red"
                                             width="48%"
-                                            onClick={() => handleCloseClick(index)}
+                                            onClick={() =>
+                                                handleCloseClick(index)
+                                            }
                                         />
                                     </HStack>
                                 </>
                             ) : (
                                 <>
-                                    <Text><b>University or College:</b> {item.collegeName}</Text>
-                                    <Text><b>Degree or Specialization:</b> {item.degree}</Text>
-                                    <Text><b>From:</b> {formatDateToDisplay(item.from)}</Text>
-                                    <Text><b>To:</b> {formatDateToDisplay(item.to)}</Text>
-                                    <Text><b>CGPA or Percentage:</b> {item.cgpa}</Text>
+                                    <Text>
+                                        <b>University or College:</b>{" "}
+                                        {item.collegeName}
+                                    </Text>
+                                    <Text>
+                                        <b>Degree or Specialization:</b>{" "}
+                                        {item.degree}
+                                    </Text>
+                                    <Text>
+                                        <b>From:</b>{" "}
+                                        {formatDateToDisplay(item.from)}
+                                    </Text>
+                                    <Text>
+                                        <b>To:</b>{" "}
+                                        {formatDateToDisplay(item.to)}
+                                    </Text>
+                                    <Text>
+                                        <b>CGPA or Percentage:</b> {item.cgpa}
+                                    </Text>
                                 </>
                             )}
                         </VStack>
                     </Box>
                 ))}
-                <Button mt={4} colorScheme="teal" type="submit">
+                <Button
+                    mt={4}
+                    colorScheme="teal"
+                    type="submit"
+                >
                     Submit
                 </Button>
             </form>
-
             {/* Alert Modal */}
             <AlertModal
                 isOpen={isAlertOpen}

@@ -10,15 +10,16 @@ import {
     FormControl,
     FormLabel,
     Button,
-    VStack,
     Wrap,
     WrapItem,
+    Flex,
+    Text,
+    useColorModeValue,
 } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon, ArrowBackIcon } from "@chakra-ui/icons";
 import conf from "../../conf/conf";
 import { login } from "../../store/authSlice.js";
-import { useNavigate } from "react-router-dom";
-
+import { NavLink, useNavigate } from "react-router-dom";
 const skills = [
     "C++",
     "Java",
@@ -237,16 +238,16 @@ const SkillsForm = () => {
                     body: JSON.stringify({ skills: selectedSkills }),
                 }
             );
-    
+
             if (response.ok) {
                 const data = await response.json();
                 dispatch(login(data.data));
-                navigate('/update-details/edit-education')
+                navigate("/update-details/edit-education");
             } else {
-                throw new Error('Skills update error')
+                throw new Error("Skills update error");
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     };
 
@@ -267,14 +268,30 @@ const SkillsForm = () => {
     const filteredSkills = skills.filter((skill) =>
         skill.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-
+const linkColor = useColorModeValue("blue.500", "blue.300");
     return (
         <Box
             maxW="600px"
-            alignSelf={'center'}
+            alignSelf={"center"}
             p={4}
         >
+            <NavLink to="/feed">
+                <Button
+                    leftIcon={<ArrowBackIcon />}
+                    variant="link"
+                    mb={4}
+                    color={linkColor}
+                >
+                    Back To Application
+                </Button>
+            </NavLink>
+            <Text
+                fontSize={"2xl"}
+                fontWeight={"bold"}
+                mb={"2"}
+            >
+                Edit Your Skills
+            </Text>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl id="skills">
                     <FormLabel>Select skills, tools, roles</FormLabel>

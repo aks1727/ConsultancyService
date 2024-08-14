@@ -15,7 +15,7 @@ function AdminBase() {
     const [isloader, setIsloader] = useState(false)
     useGSAP(() => {
         gsap.to("#welcome", {
-            duration: 2,
+            duration: 1,
             x:100,
             repeat: -1,
             yoyo: true,

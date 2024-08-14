@@ -12,9 +12,10 @@ import {
     IconButton,
     Alert,
     AlertIcon,
+    useColorModeValue,
 } from "@chakra-ui/react";
-import { AddIcon, DeleteIcon, EditIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
-import { useNavigate } from 'react-router-dom';
+import { AddIcon, DeleteIcon, EditIcon, CheckIcon, CloseIcon, ArrowBackIcon } from "@chakra-ui/icons";
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../store/authSlice.js';
 import conf from "../../conf/conf";
@@ -123,8 +124,31 @@ const AchievementsForm = () => {
         setIsAlertOpen(false);
     };
 
+    const linkColor = useColorModeValue("blue.500", "blue.300");
     return (
-        <Box maxW="600px" mx="auto" p={4} pb={20}>
+        <Box
+            maxW="600px"
+            mx="auto"
+            p={4}
+            pb={20}
+        >
+            <NavLink to="/feed">
+                <Button
+                    leftIcon={<ArrowBackIcon />}
+                    variant="link"
+                    mb={4}
+                    color={linkColor}
+                >
+                    Back To Application
+                </Button>
+            </NavLink>
+            <Text
+                fontSize={"2xl"}
+                fontWeight={"bold"}
+                mb={"2"}
+            >
+                Edit Your Achievement Details
+            </Text>
             <Button
                 leftIcon={<AddIcon />}
                 colorScheme="teal"
@@ -143,15 +167,30 @@ const AchievementsForm = () => {
             </Button>
             <form onSubmit={handleSubmit(onSubmit)}>
                 {formError && (
-                    <Alert status="error" mb={4}>
+                    <Alert
+                        status="error"
+                        mb={4}
+                    >
                         <AlertIcon />
                         {formError}
                     </Alert>
                 )}
                 {fields.map((item, index) => (
-                    <Box key={id} mt={4} p={4} borderWidth="1px" borderRadius="lg">
-                        <VStack spacing={4} align="flex-start">
-                            <HStack justify="space-between" width="100%">
+                    <Box
+                        key={id}
+                        mt={4}
+                        p={4}
+                        borderWidth="1px"
+                        borderRadius="lg"
+                    >
+                        <VStack
+                            spacing={4}
+                            align="flex-start"
+                        >
+                            <HStack
+                                justify="space-between"
+                                width="100%"
+                            >
                                 <Text fontWeight="bold">
                                     Achievement {index + 1}
                                 </Text>
@@ -161,7 +200,9 @@ const AchievementsForm = () => {
                                             <IconButton
                                                 icon={<EditIcon />}
                                                 colorScheme="teal"
-                                                onClick={() => setEditingIndex(index)}
+                                                onClick={() =>
+                                                    setEditingIndex(index)
+                                                }
                                             />
                                             <IconButton
                                                 icon={<DeleteIcon />}
@@ -174,113 +215,213 @@ const AchievementsForm = () => {
                             </HStack>
                             {editingIndex === index ? (
                                 <>
-                                    <FormControl isInvalid={errors.achievementDetails?.[index]?.organization}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.achievementDetails?.[index]
+                                                ?.organization
+                                        }
+                                    >
                                         <FormLabel>
                                             Organization{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`achievementDetails[${index}].organization`}
                                             control={control}
-                                            rules={{ required: "Organization is required" }}
+                                            rules={{
+                                                required:
+                                                    "Organization is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input placeholder="Enter the organization" {...field} />
+                                                <Input
+                                                    placeholder="Enter the organization"
+                                                    {...field}
+                                                />
                                             )}
                                         />
-                                        {errors.achievementDetails?.[index]?.organization && (
+                                        {errors.achievementDetails?.[index]
+                                            ?.organization && (
                                             <Text color="red.500">
-                                                {errors.achievementDetails[index].organization.message}
+                                                {
+                                                    errors.achievementDetails[
+                                                        index
+                                                    ].organization.message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
-                                    <FormControl isInvalid={errors.achievementDetails?.[index]?.achievement}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.achievementDetails?.[index]
+                                                ?.achievement
+                                        }
+                                    >
                                         <FormLabel>
                                             Achievement{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`achievementDetails[${index}].achievement`}
                                             control={control}
-                                            rules={{ required: "Achievement is required" }}
+                                            rules={{
+                                                required:
+                                                    "Achievement is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input placeholder="Enter your achievement" {...field} />
+                                                <Input
+                                                    placeholder="Enter your achievement"
+                                                    {...field}
+                                                />
                                             )}
                                         />
-                                        {errors.achievementDetails?.[index]?.achievement && (
+                                        {errors.achievementDetails?.[index]
+                                            ?.achievement && (
                                             <Text color="red.500">
-                                                {errors.achievementDetails[index].achievement.message}
+                                                {
+                                                    errors.achievementDetails[
+                                                        index
+                                                    ].achievement.message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
-                                    <FormControl isInvalid={errors.achievementDetails?.[index]?.date}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.achievementDetails?.[index]
+                                                ?.date
+                                        }
+                                    >
                                         <FormLabel>
                                             Date{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`achievementDetails[${index}].date`}
                                             control={control}
-                                            rules={{ required: "Date is required" }}
+                                            rules={{
+                                                required: "Date is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input type="date" {...field} />
+                                                <Input
+                                                    type="date"
+                                                    {...field}
+                                                />
                                             )}
                                         />
-                                        {errors.achievementDetails?.[index]?.date && (
+                                        {errors.achievementDetails?.[index]
+                                            ?.date && (
                                             <Text color="red.500">
-                                                {errors.achievementDetails[index].date.message}
+                                                {
+                                                    errors.achievementDetails[
+                                                        index
+                                                    ].date.message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
-                                    <FormControl isInvalid={errors.achievementDetails?.[index]?.url}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.achievementDetails?.[index]
+                                                ?.url
+                                        }
+                                    >
                                         <FormLabel>
                                             URL{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`achievementDetails[${index}].url`}
                                             control={control}
-                                            rules={{ required: "URL is required" }}
+                                            rules={{
+                                                required: "URL is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input placeholder="Enter the URL" {...field} />
+                                                <Input
+                                                    placeholder="Enter the URL"
+                                                    {...field}
+                                                />
                                             )}
                                         />
-                                        {errors.achievementDetails?.[index]?.url && (
+                                        {errors.achievementDetails?.[index]
+                                            ?.url && (
                                             <Text color="red.500">
-                                                {errors.achievementDetails[index].url.message}
+                                                {
+                                                    errors.achievementDetails[
+                                                        index
+                                                    ].url.message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
-                                    <HStack width="100%" justifyContent="space-between">
+                                    <HStack
+                                        width="100%"
+                                        justifyContent="space-between"
+                                    >
                                         <IconButton
                                             icon={<CheckIcon />}
                                             colorScheme="teal"
                                             width="48%"
-                                            onClick={() => handleCheckClick(index)}
+                                            onClick={() =>
+                                                handleCheckClick(index)
+                                            }
                                         />
                                         <IconButton
                                             icon={<CloseIcon />}
                                             colorScheme="red"
                                             width="48%"
-                                            onClick={() => handleCloseClick(index)}
+                                            onClick={() =>
+                                                handleCloseClick(index)
+                                            }
                                         />
                                     </HStack>
                                 </>
                             ) : (
                                 <>
-                                    <Text><b>Organization:</b> {item.organization}</Text>
-                                    <Text><b>Achievement:</b> {item.achievement}</Text>
-                                    <Text><b>Date:</b> {item.date}</Text>
-                                    <Text><b>URL:</b> {item.url}</Text>
+                                    <Text>
+                                        <b>Organization:</b> {item.organization}
+                                    </Text>
+                                    <Text>
+                                        <b>Achievement:</b> {item.achievement}
+                                    </Text>
+                                    <Text>
+                                        <b>Date:</b> {item.date}
+                                    </Text>
+                                    <Text>
+                                        <b>URL:</b> {item.url}
+                                    </Text>
                                 </>
                             )}
                         </VStack>
                     </Box>
                 ))}
-                <Button mt={4} colorScheme="teal" type="submit">
+                <Button
+                    mt={4}
+                    colorScheme="teal"
+                    type="submit"
+                >
                     Submit
                 </Button>
             </form>
-
             {/* Alert Modal */}
             <AlertModal
                 isOpen={isAlertOpen}

@@ -30,7 +30,7 @@ function Home() {
 
     return (
         <>
-            <Flex flexDirection={'column'} overflowX="hidden"> {/* Added overflowX="hidden" */}
+            <Flex flexDirection={'column'} > {/* Added overflowX="hidden" */}
                 <Navbar
                     NAV_ITEMS={[
                         {
@@ -61,7 +61,8 @@ function Home() {
                 />
                 <Flex
                     w="100%"
-                    h={{ base: "max-content", md: "100vh" }}
+                    h={'max-content'}
+                    minH={'100vh'}
                     flexWrap="wrap"
                     alignItems="center"
                     justifyContent="space-evenly"

@@ -1,15 +1,19 @@
 import React from "react";
 import VNavbar from "../Navigation/VNavBar.jsx";
 import Navbar from "../Navigation/Navbar.jsx";
-import { Box,Text, Flex, useBreakpointValue, VStack } from "@chakra-ui/react";
+import { Box, Flex, useBreakpointValue } from "@chakra-ui/react";
 import { Outlet } from "react-router-dom";
 
-function Layoutone({Navitems =[] ,VNavItems =[] }) {
+function Layoutone({ Navitems = [], VNavItems = [] }) {
     const navbarHeight = 60; // Adjust based on the height of Navbar
-    const vNavWidth = 250; // Width of VNavbar in desktop mode
-    const rightBoxWidth = 300; // Width of the right-hand side box
+    const vNavWidth = useBreakpointValue({
+        base: "100%",
+        md: "250px",
+        lg: "250px",
+    });
 
-    const isDesktop = useBreakpointValue({ base: false, lg: true });
+    // Determine if the screen is large enough for desktop layout
+    const isDesktop = useBreakpointValue({ base: false, md: true });
 
     return (
         <>
@@ -17,10 +21,7 @@ function Layoutone({Navitems =[] ,VNavItems =[] }) {
             <Flex direction={isDesktop ? "row" : "column"}>
                 {isDesktop && (
                     <Box
-                        position="fixed"
-                        top={navbarHeight}
-                        left="0"
-                        width={`${vNavWidth}px`}
+                        width={vNavWidth}
                         height={`calc(100vh - ${navbarHeight}px)`}
                     >
                         <VNavbar navItems={VNavItems} />
@@ -30,13 +31,12 @@ function Layoutone({Navitems =[] ,VNavItems =[] }) {
                 <Box
                     flex="1"
                     marginTop={`${navbarHeight}px`}
-                    marginLeft={isDesktop ? `${vNavWidth}px` : "0"}
                     overflowY="auto"
                     height={`calc(100vh - ${navbarHeight}px)`}
-                    p="4"
+                    p={{ base: "2", md: "4" }}
                 >
                     {/* Main Content */}
-                    <Outlet></Outlet>
+                    <Outlet />
                 </Box>
 
                 {!isDesktop && (

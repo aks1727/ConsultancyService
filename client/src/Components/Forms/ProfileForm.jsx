@@ -75,6 +75,7 @@ const ProfileForm = () => {
         if (responseData && responseData.data) {
             // console.log(responseData.data);
             dispatch(login(responseData.data))
+            navigate('/update-details/edit-skills')
         }
         setIsLoader(false)
     };

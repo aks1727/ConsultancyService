@@ -13,9 +13,10 @@ import {
     Alert,
     AlertIcon,
     Checkbox,
+    useColorModeValue,
 } from "@chakra-ui/react";
-import { AddIcon, DeleteIcon, EditIcon, CheckIcon, CloseIcon } from "@chakra-ui/icons";
-import { useNavigate } from 'react-router-dom';
+import { AddIcon, DeleteIcon, EditIcon, CheckIcon, CloseIcon, ArrowBackIcon } from "@chakra-ui/icons";
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../store/authSlice.js';
 import conf from "../../conf/conf";
@@ -126,8 +127,31 @@ const ExperienceForm = () => {
         setIsAlertOpen(false);
     };
 
+    const linkColor = useColorModeValue("blue.500", "blue.300");
     return (
-        <Box maxW="600px" mx="auto" p={4} pb={20}>
+        <Box
+            maxW="600px"
+            mx="auto"
+            p={4}
+            pb={20}
+        >
+            <NavLink to="/feed">
+                <Button
+                    leftIcon={<ArrowBackIcon />}
+                    variant="link"
+                    mb={4}
+                    color={linkColor}
+                >
+                    Back To Application
+                </Button>
+            </NavLink>
+            <Text
+                fontSize={"2xl"}
+                fontWeight={"bold"}
+                mb={"2"}
+            >
+                Edit Your Experience details
+            </Text>
             <Button
                 leftIcon={<AddIcon />}
                 colorScheme="teal"
@@ -148,15 +172,30 @@ const ExperienceForm = () => {
             </Button>
             <form onSubmit={handleSubmit(onSubmit)}>
                 {formError && (
-                    <Alert status="error" mb={4}>
+                    <Alert
+                        status="error"
+                        mb={4}
+                    >
                         <AlertIcon />
                         {formError}
                     </Alert>
                 )}
                 {fields.map((item, index) => (
-                    <Box key={item.id || uniqueId} mt={4} p={4} borderWidth="1px" borderRadius="lg">
-                        <VStack spacing={4} align="flex-start">
-                            <HStack justify="space-between" width="100%">
+                    <Box
+                        key={item.id || uniqueId}
+                        mt={4}
+                        p={4}
+                        borderWidth="1px"
+                        borderRadius="lg"
+                    >
+                        <VStack
+                            spacing={4}
+                            align="flex-start"
+                        >
+                            <HStack
+                                justify="space-between"
+                                width="100%"
+                            >
                                 <Text fontWeight="bold">
                                     Experience {index + 1}
                                 </Text>
@@ -166,7 +205,9 @@ const ExperienceForm = () => {
                                             <IconButton
                                                 icon={<EditIcon />}
                                                 colorScheme="teal"
-                                                onClick={() => setEditingIndex(index)}
+                                                onClick={() =>
+                                                    setEditingIndex(index)
+                                                }
                                             />
                                             <IconButton
                                                 icon={<DeleteIcon />}
@@ -179,148 +220,275 @@ const ExperienceForm = () => {
                             </HStack>
                             {editingIndex === index ? (
                                 <>
-                                    <FormControl isInvalid={errors.experienceDetails?.[index]?.title}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.experienceDetails?.[index]
+                                                ?.title
+                                        }
+                                    >
                                         <FormLabel>
                                             Title{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`experienceDetails[${index}].title`}
                                             control={control}
-                                            rules={{ required: "Title is required" }}
+                                            rules={{
+                                                required: "Title is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input placeholder="Enter your title" {...field} />
+                                                <Input
+                                                    placeholder="Enter your title"
+                                                    {...field}
+                                                />
                                             )}
                                         />
-                                        {errors.experienceDetails?.[index]?.title && (
+                                        {errors.experienceDetails?.[index]
+                                            ?.title && (
                                             <Text color="red.500">
-                                                {errors.experienceDetails[index].title.message}
+                                                {
+                                                    errors.experienceDetails[
+                                                        index
+                                                    ].title.message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
-                                    <FormControl isInvalid={errors.experienceDetails?.[index]?.duration}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.experienceDetails?.[index]
+                                                ?.duration
+                                        }
+                                    >
                                         <FormLabel>
                                             Duration{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`experienceDetails[${index}].duration`}
                                             control={control}
-                                            rules={{ required: "Duration is required" }}
+                                            rules={{
+                                                required:
+                                                    "Duration is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input placeholder="Enter the duration" {...field} />
+                                                <Input
+                                                    placeholder="Enter the duration"
+                                                    {...field}
+                                                />
                                             )}
                                         />
-                                        {errors.experienceDetails?.[index]?.duration && (
+                                        {errors.experienceDetails?.[index]
+                                            ?.duration && (
                                             <Text color="red.500">
-                                                {errors.experienceDetails[index].duration.message}
+                                                {
+                                                    errors.experienceDetails[
+                                                        index
+                                                    ].duration.message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
-                                    <FormControl isInvalid={errors.experienceDetails?.[index]?.company}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.experienceDetails?.[index]
+                                                ?.company
+                                        }
+                                    >
                                         <FormLabel>
                                             Company{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`experienceDetails[${index}].company`}
                                             control={control}
-                                            rules={{ required: "Company is required" }}
+                                            rules={{
+                                                required: "Company is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input placeholder="Enter the company name" {...field} />
+                                                <Input
+                                                    placeholder="Enter the company name"
+                                                    {...field}
+                                                />
                                             )}
                                         />
-                                        {errors.experienceDetails?.[index]?.company && (
+                                        {errors.experienceDetails?.[index]
+                                            ?.company && (
                                             <Text color="red.500">
-                                                {errors.experienceDetails[index].company.message}
+                                                {
+                                                    errors.experienceDetails[
+                                                        index
+                                                    ].company.message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
-                                    <FormControl isInvalid={errors.experienceDetails?.[index]?.location}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.experienceDetails?.[index]
+                                                ?.location
+                                        }
+                                    >
                                         <FormLabel>
                                             Location{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`experienceDetails[${index}].location`}
                                             control={control}
-                                            rules={{ required: "Location is required" }}
+                                            rules={{
+                                                required:
+                                                    "Location is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input placeholder="Enter the location" {...field} />
+                                                <Input
+                                                    placeholder="Enter the location"
+                                                    {...field}
+                                                />
                                             )}
                                         />
-                                        {errors.experienceDetails?.[index]?.location && (
+                                        {errors.experienceDetails?.[index]
+                                            ?.location && (
                                             <Text color="red.500">
-                                                {errors.experienceDetails[index].location.message}
+                                                {
+                                                    errors.experienceDetails[
+                                                        index
+                                                    ].location.message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
-                                    <FormControl isInvalid={errors.experienceDetails?.[index]?.description}>
+                                    <FormControl
+                                        isInvalid={
+                                            errors.experienceDetails?.[index]
+                                                ?.description
+                                        }
+                                    >
                                         <FormLabel>
                                             Description{" "}
-                                            <Text as="span" color="red.500">*</Text>
+                                            <Text
+                                                as="span"
+                                                color="red.500"
+                                            >
+                                                *
+                                            </Text>
                                         </FormLabel>
                                         <Controller
                                             name={`experienceDetails[${index}].description`}
                                             control={control}
-                                            rules={{ required: "Description is required" }}
+                                            rules={{
+                                                required:
+                                                    "Description is required",
+                                            }}
                                             render={({ field }) => (
-                                                <Input placeholder="Enter a brief description" {...field} />
+                                                <Input
+                                                    placeholder="Enter a brief description"
+                                                    {...field}
+                                                />
                                             )}
                                         />
-                                        {errors.experienceDetails?.[index]?.description && (
+                                        {errors.experienceDetails?.[index]
+                                            ?.description && (
                                             <Text color="red.500">
-                                                {errors.experienceDetails[index].description.message}
+                                                {
+                                                    errors.experienceDetails[
+                                                        index
+                                                    ].description.message
+                                                }
                                             </Text>
                                         )}
                                     </FormControl>
                                     <FormControl>
-                                        <FormLabel>
-                                            Currently Working
-                                        </FormLabel>
+                                        <FormLabel>Currently Working</FormLabel>
                                         <Controller
                                             name={`experienceDetails[${index}].isWorking`}
                                             control={control}
                                             render={({ field }) => (
-                                                <Checkbox {...field} isChecked={field.value}>
+                                                <Checkbox
+                                                    {...field}
+                                                    isChecked={field.value}
+                                                >
                                                     I'm currently working here
                                                 </Checkbox>
                                             )}
                                         />
                                     </FormControl>
-                                    <HStack width="100%" justifyContent="space-between">
+                                    <HStack
+                                        width="100%"
+                                        justifyContent="space-between"
+                                    >
                                         <IconButton
                                             icon={<CheckIcon />}
                                             colorScheme="teal"
                                             width="48%"
-                                            onClick={() => handleCheckClick(index)}
+                                            onClick={() =>
+                                                handleCheckClick(index)
+                                            }
                                         />
                                         <IconButton
                                             icon={<CloseIcon />}
                                             colorScheme="red"
                                             width="48%"
-                                            onClick={() => handleCloseClick(index)}
+                                            onClick={() =>
+                                                handleCloseClick(index)
+                                            }
                                         />
                                     </HStack>
                                 </>
                             ) : (
                                 <>
-                                    <Text><b>Title:</b> {item.title}</Text>
-                                    <Text><b>Duration:</b> {item.duration}</Text>
-                                    <Text><b>Company:</b> {item.company}</Text>
-                                    <Text><b>Location:</b> {item.location}</Text>
-                                    <Text><b>Description:</b> {item.description}</Text>
-                                    <Text><b>Currently Working:</b> {item.isWorking ? "Yes" : "No"}</Text>
+                                    <Text>
+                                        <b>Title:</b> {item.title}
+                                    </Text>
+                                    <Text>
+                                        <b>Duration:</b> {item.duration}
+                                    </Text>
+                                    <Text>
+                                        <b>Company:</b> {item.company}
+                                    </Text>
+                                    <Text>
+                                        <b>Location:</b> {item.location}
+                                    </Text>
+                                    <Text>
+                                        <b>Description:</b> {item.description}
+                                    </Text>
+                                    <Text>
+                                        <b>Currently Working:</b>{" "}
+                                        {item.isWorking ? "Yes" : "No"}
+                                    </Text>
                                 </>
                             )}
                         </VStack>
                     </Box>
                 ))}
-                <Button mt={4} colorScheme="teal" type="submit">
+                <Button
+                    mt={4}
+                    colorScheme="teal"
+                    type="submit"
+                >
                     Submit
                 </Button>
             </form>
-
             {/* Alert Modal */}
             <AlertModal
                 isOpen={isAlertOpen}
