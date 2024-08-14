@@ -5,6 +5,7 @@ import { Admin } from "../models/admin.model.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { accessTokenOptions, refreshTokenOptions } from "../constants.js";
 import { User } from "../models/user.model.js";
+import { Mentor } from "../models/mentors.model.js";
 
 const generateTokens = async (adminId) => {
     try {
@@ -41,7 +42,9 @@ const registerAdmin = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while registering admin");
     }
 
-    const finalAdmin = await Admin.findById(admin.id).select('-password -refreshToken');
+    const finalAdmin = await Admin.findById(admin.id).select(
+        "-password -refreshToken"
+    );
     const { accessToken, refreshToken } = await generateTokens(admin._id);
 
     return res
@@ -72,29 +75,27 @@ const loginAdmin = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, admin, "Login Successful"));
 });
 
-
 const logoutAdmin = asyncHandler(async (req, res) => {
-    const admin = await Admin.findByIdAndUpdate(req.admin._id,
-        {
-            $unset: {
-                refreshToken: 1,
-            },
-        }
-    )
-    if(!admin){
-        throw new ApiError(404, "Admin not found")
+    const admin = await Admin.findByIdAndUpdate(req.admin._id, {
+        $unset: {
+            refreshToken: 1,
+        },
+    });
+    if (!admin) {
+        throw new ApiError(404, "Admin not found");
     }
     return res.status(200).json(new ApiResponse(200, {}, "Logout Successful"));
-
-})
+});
 
 const getAdmin = asyncHandler(async (req, res) => {
-    const admin = await Admin.findById(req.admin._id).select('-password -refreshToken');
-    if(!admin){
-        throw new ApiError(404, "Admin not found")
+    const admin = await Admin.findById(req.admin._id).select(
+        "-password -refreshToken"
+    );
+    if (!admin) {
+        throw new ApiError(404, "Admin not found");
     }
     return res.status(200).json(new ApiResponse(200, admin, "Admin details"));
-})
+});
 
 const getAllMentorsRequest = asyncHandler(async (req, res) => {
     const mentorRequests = await MentorRequest.aggregate([
@@ -108,55 +109,66 @@ const getAllMentorsRequest = asyncHandler(async (req, res) => {
         },
         {
             $unwind: "$user", // Unwind the user array to a single document
-        }
+        },
     ]);
-    if(!mentorRequests){
-        throw new ApiError(404, "Mentor Requests not found")
+    if (!mentorRequests) {
+        throw new ApiError(404, "Mentor Requests not found");
     }
-    return res.status(200).json(new ApiResponse(200, {mentorRequests}, "Mentor Requests"));
-})
+    return res
+        .status(200)
+        .json(new ApiResponse(200, { mentorRequests }, "Mentor Requests"));
+});
 
 const acceptMentorRequests = asyncHandler(async (req, res) => {
-    const {id} = req.params
-    console.log(id)
-    const mentorRequest = await MentorRequest.findByIdAndDelete(id)
-    if(!mentorRequest){
-        throw new ApiError(404, "Mentor Request not found")
+    const { id } = req.params;
+    // console.log(id);
+    const mentorRequest = await MentorRequest.findById(id);
+    if (!mentorRequest) {
+        throw new ApiError(404, "Mentor Request not found");
     }
-    const user = await User.findById(mentorRequest.userId)
-    if(!user){
-        throw new ApiError(404, "User not found")
+    const user = await User.findById(mentorRequest.userId);
+    if (!user) {
+        throw new ApiError(404, "User not found");
     }
 
-    user.isMentor="yes"
-    user.save({validateBeforeSave:false})
-
-    res.status(200)
-    .json(
-        new ApiResponse(200, "Mentor Request Accepted")
+    const mentor = await Mentor.create(
+        {
+            userId: user._id,
+            linkedinProfile:mentorRequest.linkedinProfile || null,
+            resumeLink:mentorRequest.resumeLink || null,
+            whatsappNumber:mentorRequest.whatsappNumber,
+            consultancyType:mentorRequest.consultancyType
+        }
     )
-})
-
-const rejectMentorRequests = asyncHandler(async (req, res)=>{
-    const {id} = req.params
-    const mentorRequest = await MentorRequest.findByIdAndDelete(id)
-    if(!mentorRequest){
-        throw new ApiError(404, "Mentor Request not found")
-    }
-    const user = await User.findById(mentorRequest.userId)
-    if(!user){
-        throw new ApiError(404, "User not found")
+    console.log(mentor)
+    if (!mentor) {
+        throw new ApiError(500, "Error occurred while accepting mentor request");
     }
 
-    user.isMentor="no"
-    user.save({validateBeforeSave:false})
-    res.status(200)
-   .json(
-    new ApiResponse(200, "Mentor Request Rejected")
-   )
-})
+    user.isMentor = "yes";
+    user.save({ validateBeforeSave: false });
 
-export default{
+
+    res.status(200).json(new ApiResponse(200, "Mentor Request Accepted"));
+});
+
+const rejectMentorRequests = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const mentorRequest = await MentorRequest.findByIdAndDelete(id);
+    if (!mentorRequest) {
+        throw new ApiError(404, "Mentor Request not found");
+    }
+    const user = await User.findById(mentorRequest.userId);
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    user.isMentor = "no";
+    user.save({ validateBeforeSave: false });
+    res.status(200).json(new ApiResponse(200, "Mentor Request Rejected"));
+});
+
+export default {
     registerAdmin,
     loginAdmin,
     logoutAdmin,
@@ -164,4 +176,4 @@ export default{
     getAllMentorsRequest,
     acceptMentorRequests,
     rejectMentorRequests,
-}
+};

@@ -178,6 +178,7 @@ function AcceptMentorRequests() {
                                 <Flex
                                     mb={4}
                                     justifyContent={"space-between"}
+                                    flexDirection={{base:'column',md:'row'}}
                                 >
                                     <Avatar
                                         name={request.user.name}
@@ -219,6 +220,20 @@ function AcceptMentorRequests() {
                                         <Text mb={4}>
                                             <strong>Gender: </strong>
                                             {request.user.gender}
+                                        </Text>
+                                    </Flex>
+                                    <Flex flexDirection={"column"}>
+                                        <Text
+                                            fontSize={"xl"}
+                                            // fontWeight={"bold"}
+                                        >
+                                           Applied for:
+                                        </Text>
+                                        <Text
+                                            fontSize={"xl"}
+                                            fontWeight={"bold"}
+                                        >
+                                            {request.consultancyType}
                                         </Text>
                                     </Flex>
                                 </Flex>
