@@ -333,9 +333,9 @@ const updateExperienceDetails = asyncHandler(async (req, res) => {
 });
 
 const submitMentorRegistrationForm = asyncHandler(async (req, res) => {
-    const { linkedinProfile, resumeLink, whatsappNumber } = req.body;
+    const { consultancyType, linkedinProfile, resumeLink, whatsappNumber } = req.body;
     console.log(linkedinProfile, typeof resumeLink, whatsappNumber);
-    if (!whatsappNumber) {
+    if (!whatsappNumber || !consultancyType) {
         throw new ApiError(404, "Missing Credentials");
     }
     const user = await User.findById(req.user._id).select(
@@ -358,6 +358,7 @@ const submitMentorRegistrationForm = asyncHandler(async (req, res) => {
         linkedinProfile,
         resumeLink,
         whatsappNumber,
+        consultancyType
     });
     if (!mentorRequest) {
         throw new ApiError(
