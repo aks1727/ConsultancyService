@@ -124,13 +124,12 @@ const Search = () => {
                         spacing={4}
                         w={"100%"}
                     >
-                        {searchData?.map((item) => (
-                            <MentorCard
+                        {searchData?.map((item) => <MentorCard
                                 key={item?.data._id}
                                 mentor={item?.data}
                                 userDetails={item?.data.userId}
-                            />
-                        ))}
+                            /> 
+                        )}
                     </VStack>
                 )}
             </Box>

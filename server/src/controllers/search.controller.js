@@ -13,7 +13,7 @@ const searchMentors = asyncHandler(async (req, res) => {
     }
 
     const term = new RegExp(value, "i"); // Case-insensitive search
-    
+    // TODO:  make so that if the user name is searched and if he is mentor he's details should be shown not only through the consultancy type
     const userResults = await User.find({
         $or: [
             { name: { $regex: term } },
@@ -27,15 +27,11 @@ const searchMentors = asyncHandler(async (req, res) => {
     // Search in Mentor model
     const mentorResults = await Mentor.find({
         consultancyType: { $regex: term },
-    }).populate("userId", "name username email avatar bio skills experiences"); // populate user details
+    }).populate("userId", "name username email avatar bio skills"); // populate user details
 
     // console.log(mentorResults)
     // Format and merge results
     const combinedResults = [
-        ...userResults.map((user) => ({
-            type: "user",
-            data: user,
-        })),
         ...mentorResults.map((mentor) => ({
             type: "mentor",
             data: mentor,
