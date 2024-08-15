@@ -94,7 +94,6 @@ const Profile = () => {
                     >
                         {userDetails?.name}
                     </Text>
-
                     <Text>@{userDetails?.username}</Text>
                     <Text>{userDetails?.bio}</Text>
                     <HStack>
@@ -132,7 +131,10 @@ const Profile = () => {
                 variant="enclosed"
                 colorScheme="blue"
             >
-                <TabList>
+                <TabList
+                    overflowX="auto"
+                    whiteSpace="nowrap"
+                >
                     <Tab>
                         <Icon
                             as={FaBriefcase}
@@ -165,83 +167,71 @@ const Profile = () => {
 
                 <TabPanels>
                     <TabPanel>
-                        {
-                            <VStack spacing={4}>
-                                {userDetails?.experiences?.length === 0 ? (
-                                    <Box
-                                        bg={cardBg}
-                                        p={4}
-                                        borderRadius="md"
-                                        w="full"
-                                        textAlign="center"
-                                    >
-                                        <Icon
-                                            as={FaBriefcase}
-                                            boxSize={10}
-                                            mb={2}
-                                        />
-                                        <Text>
-                                            Let your experience shine! Fill in
-                                            your experience to highlight your
-                                            professional journey.
-                                        </Text>
-                                    </Box>
-                                ) : (
-                                    <Flex justifyContent={"space-evenly"}>
-                                        {userDetails?.experiences?.map(
-                                            (exp) => (
-                                                <Box
-                                                    key={exp._id}
-                                                    mb={4}
-                                                    p={4}
-                                                    bg={cardBg}
-                                                    borderRadius={"md"}
-                                                >
-                                                    <Text>
-                                                        <strong>
-                                                            Position:{" "}
-                                                        </strong>
-                                                        {exp.title}
-                                                    </Text>
-                                                    <Text>
-                                                        <strong>
-                                                            Company:{" "}
-                                                        </strong>
-                                                        {exp.company}
-                                                    </Text>
-                                                    <Text>
-                                                        <strong>
-                                                            Duration:{" "}
-                                                        </strong>
-                                                        {exp.duration}
-                                                    </Text>
-                                                    <Text>
-                                                        <strong>
-                                                            Location:{" "}
-                                                        </strong>
-                                                        {exp.location}
-                                                    </Text>
-                                                    <Text>
-                                                        <strong>
-                                                            Description:{" "}
-                                                        </strong>
-                                                        {exp.description}
-                                                    </Text>
-                                                    <Text>
-                                                        <strong>
-                                                            Currently Working:{" "}
-                                                        </strong>
-                                                        {exp.isWorking
-                                                            ? "YES"
-                                                            : "NO"}
-                                                    </Text>
-                                                </Box>
-                                            )
-                                        )}
-                                    </Flex>
-                                )}
-                            </VStack>
-                        }
+                        <VStack spacing={4}>
+                            {userDetails?.experiences?.length === 0 ? (
+                                <Box
+                                    bg={cardBg}
+                                    p={4}
+                                    borderRadius="md"
+                                    w="full"
+                                    textAlign="center"
+                                >
+                                    <Icon
+                                        as={FaBriefcase}
+                                        boxSize={10}
+                                        mb={2}
+                                    />
+                                    <Text>
+                                        Let your experience shine! Fill in your
+                                        experience to highlight your
+                                        professional journey.
+                                    </Text>
+                                </Box>
+                            ) : (
+                                <VStack
+                                    spacing={4}
+                                    w="full"
+                                >
+                                    {userDetails?.experiences?.map((exp) => (
+                                        <Box
+                                            key={exp._id}
+                                            mb={4}
+                                            p={4}
+                                            bg={cardBg}
+                                            borderRadius="md"
+                                            w="full"
+                                        >
+                                            <Text>
+                                                <strong>Position: </strong>
+                                                {exp.title}
+                                            </Text>
+                                            <Text>
+                                                <strong>Company: </strong>
+                                                {exp.company}
+                                            </Text>
+                                            <Text>
+                                                <strong>Duration: </strong>
+                                                {exp.duration}
+                                            </Text>
+                                            <Text>
+                                                <strong>Location: </strong>
+                                                {exp.location}
+                                            </Text>
+                                            <Text>
+                                                <strong>Description: </strong>
+                                                {exp.description}
+                                            </Text>
+                                            <Text>
+                                                <strong>
+                                                    Currently Working:{" "}
+                                                </strong>
+                                                {exp.isWorking ? "YES" : "NO"}
+                                            </Text>
+                                        </Box>
+                                    ))}
+                                </VStack>
+                            )}
+                        </VStack>
                     </TabPanel>
                     <TabPanel>
                         <VStack spacing={4}>
@@ -265,15 +255,19 @@ const Profile = () => {
                                     </Text>
                                 </Box>
                             ) : (
-                                <Flex justifyContent={"space-evenly"}>
+                                <VStack
+                                    spacing={4}
+                                    w="full"
+                                >
                                     {userDetails?.educations?.map((edu) => (
                                         <Box
                                             key={edu._id}
                                             m={4}
                                             p={4}
-                                            minW={40}
+                                            minW={{ base: "full", md: 40 }}
                                             bg={cardBg}
-                                            borderRadius={"md"}
+                                            borderRadius="md"
+                                            w="full"
                                         >
                                             <Text>
                                                 <strong>College Name: </strong>
@@ -299,7 +293,7 @@ const Profile = () => {
                                             </Text>
                                         </Box>
                                     ))}
-                                </Flex>
+                                </VStack>
                             )}
                         </VStack>
                     </TabPanel>
@@ -325,14 +319,18 @@ const Profile = () => {
                                     </Text>
                                 </Box>
                             ) : (
-                                <Flex justifyContent={"space-evenly"}>
+                                <VStack
+                                    spacing={4}
+                                    w="full"
+                                >
                                     {userDetails?.achievements?.map((ach) => (
                                         <Box
                                             key={ach._id}
                                             mb={4}
                                             p={4}
                                             bg={cardBg}
-                                            borderRadius={"md"}
+                                            borderRadius="md"
+                                            w="full"
                                         >
                                             <Text>
                                                 <strong>Organization: </strong>
@@ -346,15 +344,15 @@ const Profile = () => {
                                                 as={Link}
                                                 to={ach.url}
                                                 target="_blank"
-                                                colorScheme={"blue"}
-                                                variant={"outline"}
+                                                colorScheme="blue"
+                                                variant="outline"
                                                 mt={2}
                                             >
                                                 Visit Achievement
                                             </Button>
                                         </Box>
                                     ))}
-                                </Flex>
+                                </VStack>
                             )}
                         </VStack>
                     </TabPanel>

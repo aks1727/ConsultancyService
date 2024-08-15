@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { FaCheckCircle, FaStar } from "react-icons/fa";
 import { FiPhoneCall, FiUser, FiTarget, FiFileText } from "react-icons/fi";
-
+import {NavLink} from "react-router-dom"
 const MentorCard = ({ mentor, userDetails }) => {
     return (
         <Box
@@ -29,14 +29,18 @@ const MentorCard = ({ mentor, userDetails }) => {
             color={useColorModeValue("black", "white")}
             shadow="md"
             maxW="100%"
-            width={'100%'}
+            width={"100%"}
             mt={2}
         >
             <HStack
                 align="start"
                 spacing={6}
             >
-                <Flex flexDirection={{base:'column', md:'row'}} justifyContent={'space-between'} width={'100%'}>
+                <Flex
+                    flexDirection={{ base: "column", md: "row" }}
+                    justifyContent={"space-between"}
+                    width={"100%"}
+                >
                     {/* Left Section */}
                     <VStack
                         align="start"
@@ -54,18 +58,26 @@ const MentorCard = ({ mentor, userDetails }) => {
                                 align="start"
                                 spacing={0}
                             >
-                                <Heading size="lg">
-                                    {userDetails?.name}{" "}
-                                    <Icon
-                                        as={FaCheckCircle}
-                                        color="blue.500"
-                                    />
-                                </Heading>
-                                <Text color="blue.400">@{userDetails?.username}</Text>
+                                <NavLink
+                                    to={`/profile/u/${userDetails?.username}`}
+                                >
+                                    <Heading size="lg">
+                                        {userDetails?.name}{" "}
+                                        <Icon
+                                            as={FaCheckCircle}
+                                            color="blue.500"
+                                        />
+                                    </Heading>
+                                    <Text color="blue.400">
+                                        @{userDetails?.username}
+                                    </Text>
+                                </NavLink>
                                 <Text>
-                                    {
-                                        userDetails?.experiences?.map(exp =>  exp.isWorking === true ? `${exp.title} @ ${exp.company}` : "")
-                                    }
+                                    {userDetails?.experiences?.map((exp) =>
+                                        exp.isWorking === true
+                                            ? `${exp.title} @ ${exp.company}`
+                                            : ""
+                                    )}
                                 </Text>
                             </VStack>
                         </HStack>

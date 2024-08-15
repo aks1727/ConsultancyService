@@ -14,15 +14,17 @@ import {
 } from "@chakra-ui/react";
 import conf from "../conf/conf";
 import MentorCard from "../Components/Card/MentorCard";
-
+import Loader from "../Components/Loader/Loader.jsx"
 const Search = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const value = searchParams.get("value");
     const [searchQuery, setSearchQuery] = useState(value || "");
     const [searchData, setSearchData] = useState([]);
+    const [isLoader, setIsLoader] = useState(false)
 
     const searchContent = async () => {
+        setIsLoader(true);
         try {
             const res = await fetch(
                 `${conf.backendSearch}/searchMentors/?value=${searchQuery}`
@@ -34,6 +36,7 @@ const Search = () => {
         } catch (error) {
             console.log(error);
         }
+        setIsLoader(false)
     };
 
     useEffect(() => {
@@ -53,7 +56,7 @@ const Search = () => {
     const color = useColorModeValue("black", "white");
     const placeholderColor = useColorModeValue("gray.500", "gray.300");
 
-    return (
+    return isLoader ? <Loader/> :(
         <>
             <VStack
                 spacing={4}
