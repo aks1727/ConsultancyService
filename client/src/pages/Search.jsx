@@ -111,7 +111,7 @@ const Search = () => {
                 shadow="md"
                 maxW="full"
                 mt={1}
-                mb={4}
+                mb={20}
             >
                 <Heading
                     as="h2"
