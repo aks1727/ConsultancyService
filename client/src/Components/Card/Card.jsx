@@ -11,7 +11,7 @@ function Card({
     const navigate = useNavigate(); // Initialize useNavigate
 
     const handleCardClick = () => {
-        navigate(`/search?category=${ConsultancyType}`); // Navigate to search with category as a query parameter
+        navigate(`/search?value=${ConsultancyType}`); // Navigate to search with category as a query parameter
     };
 
     return (

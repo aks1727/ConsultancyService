@@ -45,13 +45,16 @@ const registerUser = asyncHandler(async (req, res) => {
     if (emailExist) {
         throw new ApiError(403, "Email already registered with other user");
     }
-    const usernameExist = await User.findOne({username})
+    const usernameExist = await User.findOne({ username });
     if (usernameExist) {
         throw new ApiError(403, "Username already registered with other user");
     }
     const userExist = await User.findOne({ phoneNumber });
     if (userExist) {
-        throw new ApiError(403, "Phone Number already registered with other user");
+        throw new ApiError(
+            403,
+            "Phone Number already registered with other user"
+        );
     }
     const user = await User.create({
         name,
@@ -140,6 +143,20 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(201, req.user, "Success"));
 });
 
+const getUserByusername = asyncHandler(async (req, res) => {
+    const { username } = req.params;
+    if (!username) {
+        throw new ApiError(404, "Missing Credentials");
+    }
+    const user = await User.findOne({ username: username }).select(
+        "-password -refreshToken"
+    );
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+    return res.status(200).json(new ApiResponse(201, user, "Users found"));
+});
+
 // updation methods for user
 
 const updateProfile = asyncHandler(async (req, res) => {
@@ -173,7 +190,7 @@ const updateProfile = asyncHandler(async (req, res) => {
 
     if (req.file) {
         // Convert the file buffer to a base64 string for Cloudinary
-        const avatarBuffer = req.file.buffer.toString('base64');
+        const avatarBuffer = req.file.buffer.toString("base64");
 
         // Upload to Cloudinary (assuming uploadOnCloudinary handles base64 data)
         const uploadResponse = await uploadOnCloudinary(avatarBuffer);
@@ -333,7 +350,8 @@ const updateExperienceDetails = asyncHandler(async (req, res) => {
 });
 
 const submitMentorRegistrationForm = asyncHandler(async (req, res) => {
-    const { consultancyType, linkedinProfile, resumeLink, whatsappNumber } = req.body;
+    const { consultancyType, linkedinProfile, resumeLink, whatsappNumber } =
+        req.body;
     console.log(linkedinProfile, typeof resumeLink, whatsappNumber);
     if (!whatsappNumber || !consultancyType) {
         throw new ApiError(404, "Missing Credentials");
@@ -344,7 +362,7 @@ const submitMentorRegistrationForm = asyncHandler(async (req, res) => {
     if (!user) {
         throw new ApiError(404, "User not found");
     }
-    if(user.isMentor==='pending'){
+    if (user.isMentor === "pending") {
         throw new ApiError(
             403,
             "You have already submitted a mentor registration request"
@@ -358,7 +376,7 @@ const submitMentorRegistrationForm = asyncHandler(async (req, res) => {
         linkedinProfile,
         resumeLink,
         whatsappNumber,
-        consultancyType
+        consultancyType,
     });
     if (!mentorRequest) {
         throw new ApiError(
@@ -380,6 +398,7 @@ export default {
     logoutUser,
     changeUserPassword,
     getCurrentUser,
+    getUserByusername,
 
     // updation methods
     updateEducationDetails,

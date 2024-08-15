@@ -22,13 +22,17 @@ const mentorSchema = new Schema({
             "Career Consultant",
             "Fitness Coach",
             "Exam/College Consultancy",
-            "Freelancer Consultant",
+            "Freelancers Consultant",
             "HealthCare Consultant",
             "Business Consultant",
             "Social Media Consultant",
             "Financial Consultant"
         ],
     },
+    ratings: {
+        type: [Number],
+        default: [],
+    }
 });
 
 export const Mentor = mongoose.model("Mentor", mentorSchema);

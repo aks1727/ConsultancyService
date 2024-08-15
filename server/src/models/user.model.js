@@ -113,6 +113,14 @@ const userSchema = new Schema(
             type:String,
             enum:['yes', 'no','pending'],
         },
+        followerCount: {
+            type: Number,
+            default: 0
+        },
+        followingCount: {
+            type: Number,
+            default: 0
+        }
     },{timestamps:true}
 )
 

@@ -48,7 +48,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
 
 
     useEffect(()=>{
-        console.log(userData)
+        // console.log(userData)
     },[userData])
 
     return (
@@ -188,7 +188,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                     <MenuList>
                                         <MenuItem
                                             as={NavLink}
-                                            to="/profile"
+                                            to={`/profile/u/${userData?.username}`}
                                         >
                                             Profile
                                         </MenuItem>
@@ -289,7 +289,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                 <MenuList>
                                     <MenuItem
                                         as={NavLink}
-                                        to="/profile"
+                                        to={`/profile/u/${userData?.username}`}
                                     >
                                         Profile
                                     </MenuItem>

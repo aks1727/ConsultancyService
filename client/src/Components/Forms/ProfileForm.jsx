@@ -28,6 +28,7 @@ const ProfileForm = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [isLoader, setIsLoader] = useState(false)
+    const [eror, seteror] = useState("")
     const {
         register,
         handleSubmit,
@@ -52,6 +53,10 @@ const ProfileForm = () => {
     const [error, setError] = useState("");
 
     const submit = async (data) => {
+        if (!data.avatar && !userData?.avatar) {
+            setError("Please select an avatar");
+            return;
+        }
         setIsLoader(true)
         const formData = new FormData();
         Object.keys(data).forEach((key) => {
@@ -130,6 +135,7 @@ const ProfileForm = () => {
                 >
                     Edit Your Profile
                 </Text>
+                <Text color={'red'}>{error}</Text>
                 <form onSubmit={handleSubmit(submit)}>
                     <VStack spacing={4}>
                         <FormControl isInvalid={errors.avatar}>

@@ -21,8 +21,10 @@ app.use(cors({
 
 import userRouter from './routes/user.routes.js';
 import adminRouter from './routes/admin.routes.js';
+import searchRouter from "./routes/search.routes.js";
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/admin',adminRouter)
+app.use('/api/v1/admin', adminRouter)
+app.use('/api/v1/searches', searchRouter)
 
 
 

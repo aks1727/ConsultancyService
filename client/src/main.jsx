@@ -46,6 +46,7 @@ import AdminBase from "./Components/admin/AdminBase.jsx";
 import AdminHome from "./Components/admin/pages/AdminHome.jsx";
 import AdminLogin from "./Components/admin/pages/AdminLogin.jsx";
 import AcceptMentorRequests from "./Components/admin/pages/AcceptMentorRequests.jsx";
+import Profile from "./pages/Profile.jsx";
 
 const router = createBrowserRouter([
     {
@@ -79,6 +80,10 @@ const router = createBrowserRouter([
                     {
                         path: "search",
                         element: <Search />,
+                    },
+                    {
+                        path: "profile/u/:username",
+                        element: <Profile />,
                     },
                 ],
             },
@@ -205,7 +210,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "accept-mentor-requests",
-                        element: <AcceptMentorRequests/>,
+                        element: <AcceptMentorRequests />,
                     },
                     {
                         path: "manage-mentors",
