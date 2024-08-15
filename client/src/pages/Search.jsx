@@ -126,9 +126,9 @@ const Search = () => {
                     >
                         {searchData?.map((item) => (
                             <MentorCard
-                                key={item.data._id}
-                                mentor={item.data}
-                                userDetails={item.data.userId}
+                                key={item?.data._id}
+                                mentor={item?.data}
+                                userDetails={item?.data.userId}
                             />
                         ))}
                     </VStack>

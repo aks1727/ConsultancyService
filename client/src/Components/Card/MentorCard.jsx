@@ -46,30 +46,30 @@ const MentorCard = ({ mentor, userDetails }) => {
                         <HStack spacing={4}>
                             <Avatar
                                 boxSize="100px"
-                                src={userDetails.avatar}
-                                name={userDetails.name}
-                                alt={`${userDetails.name}'s avatar`}
+                                src={userDetails?.avatar}
+                                name={userDetails?.name}
+                                alt={`${userDetails?.name}'s avatar`}
                             />
                             <VStack
                                 align="start"
                                 spacing={0}
                             >
                                 <Heading size="lg">
-                                    {userDetails.name}{" "}
+                                    {userDetails?.name}{" "}
                                     <Icon
                                         as={FaCheckCircle}
                                         color="blue.500"
                                     />
                                 </Heading>
-                                <Text color="blue.400">@{userDetails.username}</Text>
+                                <Text color="blue.400">@{userDetails?.username}</Text>
                                 <Text>
                                     {
-                                        userDetails.experiences?.map(exp =>  exp.isWorking === true ? `${exp.title} @ ${exp.company}` : "")
+                                        userDetails?.experiences?.map(exp =>  exp.isWorking === true ? `${exp.title} @ ${exp.company}` : "")
                                     }
                                 </Text>
                             </VStack>
                         </HStack>
-                        <Text color="gray.400">{userDetails.bio}</Text>
+                        <Text color="gray.400">{userDetails?.bio}</Text>
                         <HStack
                             spacing={4}
                             align="center"
@@ -78,20 +78,20 @@ const MentorCard = ({ mentor, userDetails }) => {
                                 as={FaStar}
                                 color="yellow.400"
                             />
-                            <Text>{mentor.rating} Ratings</Text>
+                            <Text>{mentor?.rating} Ratings</Text>
                             <Icon
                                 as={FaCheckCircle}
                                 color="green.400"
                             />
                             <Text>
-                                {mentor.sessionsTaken} Sessions Completed
+                                {mentor?.sessionsTaken} Sessions Completed
                             </Text>
                         </HStack>
                         <HStack
                             spacing={2}
                             wrap="wrap"
                         >
-                            {userDetails.skills.map((skill, index) => (
+                            {userDetails?.skills?.map((skill, index) => (
                                 <Tag
                                     key={index}
                                     colorScheme="blue"
