@@ -1,68 +1,54 @@
-import React from 'react';
-import { Box, keyframes, useColorModeValue } from '@chakra-ui/react';
+import { Box, Image, keyframes, Text } from "@chakra-ui/react";
+// import logo from "./path/to/logo.png"; // Replace with your logo path
+
+const bounce = keyframes`
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+`;
 
 const Loader = () => {
-  const bg = useColorModeValue('gray.800', 'gray.800');
-  const squareColor = useColorModeValue('yellow.400', 'yellow.300');
-
-  const animation = keyframes`
-    0% {
-      transform: translate(0, 0);
-    }
-    25% {
-      transform: translate(100%, 0);
-    }
-    50% {
-      transform: translate(100%, 100%);
-    }
-    75% {
-      transform: translate(0, 100%);
-    }
-    100% {
-      transform: translate(0, 0);
-    }
-  `;
-
-  const loaderBoxStyles = {
-    width: '230px',
-    aspectRatio: '1',
-    padding: '10px',
-    boxSizing: 'border-box',
-    display: 'grid',
-    background: bg,
-    filter: ' blur(5px) contrast(10) hue-rotate(300deg)',
-    mixBlendMode: 'darken'
-  };
-
-  const loaderAnimationStyles = {
-    content: '""',
-    gridArea: '1/1',
-    width: '100px',
-    height: '100px',
-    background: squareColor,
-    filter: 'brightness(2)', // Increase brightness of the squares
-    animation: `${animation} 2s infinite`,
-  };
-
-  const containerStyles = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
-    bg,
-  };
-
-  return (
-    <Box {...containerStyles}>
-        Logo
-      <Box {...loaderBoxStyles}>
-        <Box as="div" sx={loaderAnimationStyles} />
-        <Box as="div" sx={{ ...loaderAnimationStyles, animationDelay: '-1s' }} />
-      </Box>
-    </Box>
-  );
+    return (
+        <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            height="100vh"
+            width="100vw"
+            bg="gray.100"
+        >
+            {/* <Image
+                src={logo}
+                alt="Logo"
+                boxSize="100px"
+                mb={4}
+            /> */}
+        <Text color={'black'} mb={4}>Logo</Text>
+            <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+            >
+                {[1, 2, 3].map((dot) => (
+                    <Box
+                        key={dot}
+                        width="10px"
+                        height="10px"
+                        bg="blue.500"
+                        borderRadius="50%"
+                        mx="2px"
+                        animation={`${bounce} 0.6s ${
+                            dot * 0.1
+                        }s infinite ease-in-out`}
+                    />
+                ))}
+            </Box>
+        </Box>
+    );
 };
 
 export default Loader;

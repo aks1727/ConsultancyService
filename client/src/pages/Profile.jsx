@@ -31,7 +31,7 @@ import { Link } from "react-router-dom";
 const Profile = () => {
     const { username } = useParams();
     const [userDetails, setUserDetails] = useState({});
-    const [sameUser, setsameUser] = useState(true);
+    const [sameUser, setSameUser] = useState(true);
     const userId = useSelector((state) => state.auth.userData?._id);
     const navigate = useNavigate();
 
@@ -44,11 +44,8 @@ const Profile = () => {
                 throw new Error("Failed to fetch user");
             }
             const data = await res.json();
-            if (data.data._id !== userId) {
-                setsameUser(false);
-            }
             setUserDetails(data.data);
-            console.log(data.data);
+            setSameUser(data.data._id === userId); // Update sameUser state after setting userDetails
         } catch (error) {
             console.log(error);
         }
@@ -56,9 +53,7 @@ const Profile = () => {
 
     useEffect(() => {
         fetchUser();
-        console.log(userDetails);
-    }, [username]);
-
+    }, [username, userId]); // Adding userId as a dependency
     const bg = useColorModeValue("white", "gray.800");
     const color = useColorModeValue("black", "white");
     const cardBg = useColorModeValue("gray.200", "gray.700");
