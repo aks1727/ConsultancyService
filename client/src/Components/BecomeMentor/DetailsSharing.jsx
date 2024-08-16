@@ -15,7 +15,7 @@ import conf from "../../conf/conf";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../store/authSlice.js";
-
+import Loader from "../Loader/Loader.jsx"
 const DetailsSharing = () => {
     const {
         register,
@@ -25,8 +25,10 @@ const DetailsSharing = () => {
     } = useForm();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [isLoader, setIsLoader] = useState(false)
 
     const onSubmit = async (data) => {
+        setIsLoader(true)
         console.log(data);
         try {
             const res = await fetch(`${conf.backendUser}/submitMentorRequest`, {
@@ -47,12 +49,13 @@ const DetailsSharing = () => {
         } catch (error) {
             console.log(error);
         }
+        setIsLoader(false)
     };
 
     const linkedinProfile = watch("linkedinProfile");
     const resumeLink = watch("resumeLink");
 
-    return (
+    return isLoader ? <Loader/> : (
         <Box
             p={8}
             maxWidth="500px"

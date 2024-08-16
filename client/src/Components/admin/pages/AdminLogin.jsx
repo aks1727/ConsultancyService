@@ -18,6 +18,7 @@ import {
 import { useForm } from "react-hook-form";
 import conf from "../../../conf/conf.js";
 import { adminBaseUrl } from "../AdminConstant.js";
+import Loader from "../../Loader/Loader.jsx";
 function AdminLogin() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -27,9 +28,11 @@ function AdminLogin() {
         formState: { errors },
     } = useForm();
     const [error, setError] = useState("");
+    const [isLoader, setIsLoader] = useState(false)
 
     const login = async (data) => {
         setError("");
+        setIsLoader(true)
         try {
             const session = await fetch(`${conf.backendAdmin}/loginAdmin`, {
                 method: "POST",
@@ -71,6 +74,7 @@ function AdminLogin() {
             // Handle network or other errors
             setError(error.message);
         }
+        setIsLoader(false)
     };
     const bgColor = useColorModeValue("gray.100", "gray.700");
     const formBgColor = useColorModeValue("white", "gray.800");
@@ -78,7 +82,7 @@ function AdminLogin() {
     const errorColor = useColorModeValue("red.600", "red.400");
     const linkColor = useColorModeValue("blue.500", "blue.300");
 
-    return (
+    return isLoader ? <Loader/> : (
         <Flex
             id="marlele"
             alignItems="center"

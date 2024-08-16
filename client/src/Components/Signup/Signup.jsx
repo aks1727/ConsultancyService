@@ -7,13 +7,16 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import conf from "../../conf/conf.js"
+import Loader from "../Loader/Loader.jsx";
 function Signup() {
     const [error, setError] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors } } = useForm();
+    const [isLoader, setIsLoader] = useState(false)
 
     const createUser = async (data) => {
+        setIsLoader(true);
         setError("");
         console.log(data, typeof data);
         try {
@@ -42,6 +45,7 @@ function Signup() {
             console.log(err);
             setError(err.message);
         }
+        setIsLoader(false)
     };
 
     const bgColor = useColorModeValue("gray.100", "gray.700");
@@ -50,7 +54,7 @@ function Signup() {
     const errorColor = useColorModeValue("red.600", "red.400");
     const linkColor = useColorModeValue("blue.500", "blue.300");
 
-    return (
+    return isLoader ? <Loader/> : (
         <Flex align="center" justify="center" bg={bgColor} minH="100vh" p={[4, 6, 8]}>
             <Box
                 w="full"

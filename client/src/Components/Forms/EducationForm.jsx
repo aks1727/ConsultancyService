@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../store/authSlice.js';
 import conf from "../../conf/conf";
 import AlertModal from '../alerts/AlertModal'; // Adjust the import path accordingly
-
+import Loader from "../Loader/Loader.jsx"
 const EducationForm = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -29,6 +29,7 @@ const EducationForm = () => {
     const [isAlertOpen, setIsAlertOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [formError, setFormError] = useState('');
+    const [isLoader, setIsLoader] = useState(false)
 
     const formatDateToInput = (date) => {
         const d = new Date(date);
@@ -78,6 +79,7 @@ const EducationForm = () => {
     }, [education, reset]);
 
     const onSubmit = async (data) => {
+        setIsLoader(true)
         if (data.education.length === 0) {
             setFormError('Please add at least one education entry.');
             return;
@@ -106,6 +108,7 @@ const EducationForm = () => {
             console.log(error);
             setFormError('Failed to save education details.');
         }
+        setIsLoader(false)
     };
 
     

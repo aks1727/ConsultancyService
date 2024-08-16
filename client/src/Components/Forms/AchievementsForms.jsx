@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../store/authSlice.js';
 import conf from "../../conf/conf";
 import AlertModal from '../alerts/AlertModal'; // Adjust the import path accordingly
-
+import Loader from "../Loader/Loader.jsx";
 const AchievementsForm = () => {
     const id = useId()
     const dispatch = useDispatch();
@@ -30,6 +30,7 @@ const AchievementsForm = () => {
     const [isAlertOpen, setIsAlertOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [formError, setFormError] = useState('');
+    const [isLoader, setIsLoader] = useState(false)
 
     const { handleSubmit, control, reset, formState: { errors }, getValues, setValue, clearErrors } = useForm({
         defaultValues: {
@@ -55,7 +56,8 @@ const AchievementsForm = () => {
             setFormError('Please add at least one achievement entry.');
             return;
         }
-
+        
+        setIsLoader(true)
         try {
             const response = await fetch(
                 `${conf.backendUser}/updateAchievementDetails`,
@@ -79,6 +81,7 @@ const AchievementsForm = () => {
             console.log(error);
             setFormError('Failed to save achievement details.');
         }
+        setIsLoader(false)
     };
 
     const handleCheckClick = (index) => {
@@ -125,7 +128,7 @@ const AchievementsForm = () => {
     };
 
     const linkColor = useColorModeValue("blue.500", "blue.300");
-    return (
+    return isLoader ? <Loader/> : (
         <Box
             maxW="600px"
             mx="auto"

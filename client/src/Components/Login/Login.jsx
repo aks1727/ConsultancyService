@@ -17,10 +17,12 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import conf from "../../conf/conf.js";
+import Loader from "../Loader/Loader.jsx";
 
 function Login() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [isLoader, setIsLoader] = useState(false)
     const {
         register,
         handleSubmit,
@@ -30,6 +32,7 @@ function Login() {
 
     // Function to handle login form submission
     const login = async (data) => {
+        setIsLoader(true)
         setError("");
         try {
             // console.log(data);
@@ -74,6 +77,7 @@ function Login() {
             // Handle network or other errors
             setError(error.message);
         }
+        setIsLoader(false)
     };
 
     // Color mode values for light and dark themes
@@ -83,7 +87,7 @@ function Login() {
     const errorColor = useColorModeValue("red.600", "red.400");
     const linkColor = useColorModeValue("blue.500", "blue.300");
 
-    return (
+    return isLoader ? <Loader/>: (
         <Flex
             align="center"
             justify="center"

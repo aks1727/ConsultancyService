@@ -16,13 +16,15 @@ import React, { useEffect, useId, useState } from "react";
 import conf from "../../../conf/conf";
 import { Link, NavLink } from "react-router-dom";
 import { FaLinkedin, FaFileDownload } from "react-icons/fa";
-
+import Loader from "../../Loader/Loader";
 function AcceptMentorRequests() {
     const [data, setData] = useState([]);
     const [error, setError] = useState("");
     const toast = useToast();
-    const {isOpen, onToggle} = useDisclosure();
+    const { isOpen, onToggle } = useDisclosure();
+    const [isLoader, setIsLoader] = useState(false)
     const fetchRequest = async () => {
+        setIsLoader(true)
         try {
             const res = await fetch(
                 `${conf.backendAdmin}/getAllMentorsRequest`,
@@ -43,6 +45,7 @@ function AcceptMentorRequests() {
         } catch (err) {
             setError(err.message);
         }
+        setIsLoader(false)
     };
 
     const formatDate = (dateString) => {
@@ -60,6 +63,7 @@ function AcceptMentorRequests() {
     };
 
     const handleAccept = async (requestId, mentorName) => {
+        setIsLoader(true)
         try {
             const res = await fetch(
                 `${conf.backendAdmin}/acceptMentorRequest/${requestId}`,
@@ -95,8 +99,10 @@ function AcceptMentorRequests() {
                 isClosable: true,
             });
         }
+        setIsLoader(false)
     };
     const handleReject = async (requestId) => {
+        setIsLoader(true)
         try {
             const res = await fetch(
                 `${conf.backendAdmin}/rejectMentorRequest/${requestId}`,
@@ -131,6 +137,7 @@ function AcceptMentorRequests() {
                 isClosable: true,
             })
         }
+        setIsLoader(false)
     };
 
     useEffect(() => {

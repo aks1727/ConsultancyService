@@ -1,4 +1,4 @@
-import { Box, Image, keyframes, Text } from "@chakra-ui/react";
+import { Box, Image, keyframes, Text, useColorModeValue } from "@chakra-ui/react";
 // import logo from "./path/to/logo.png"; // Replace with your logo path
 
 const bounce = keyframes`
@@ -11,6 +11,10 @@ const bounce = keyframes`
 `;
 
 const Loader = () => {
+
+    const bg = useColorModeValue('gray.100','gray.800')
+    const text = useColorModeValue('black', 'white')
+    const ball = useColorModeValue('blue.500', 'blue.900')
     return (
         <Box
             display="flex"
@@ -19,7 +23,7 @@ const Loader = () => {
             justifyContent="center"
             height="100vh"
             width="100vw"
-            bg="gray.100"
+            bg={bg}
         >
             {/* <Image
                 src={logo}
@@ -27,7 +31,7 @@ const Loader = () => {
                 boxSize="100px"
                 mb={4}
             /> */}
-        <Text color={'black'} mb={4}>Logo</Text>
+        <Text color={text} mb={4}>Logo</Text>
             <Box
                 display="flex"
                 alignItems="center"
@@ -38,7 +42,7 @@ const Loader = () => {
                         key={dot}
                         width="10px"
                         height="10px"
-                        bg="blue.500"
+                        bg={ball}
                         borderRadius="50%"
                         mx="2px"
                         animation={`${bounce} 0.6s ${

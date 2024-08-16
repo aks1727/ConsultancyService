@@ -27,15 +27,17 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { formatDate } from "../utility/basicDates.js";
 import { Link } from "react-router-dom";
-
+import Loader from "../Components/Loader/Loader.jsx"
 const Profile = () => {
     const { username } = useParams();
     const [userDetails, setUserDetails] = useState({});
     const [sameUser, setSameUser] = useState(true);
+    const [isLoader, setIsLoader] = useState(false)
     const userId = useSelector((state) => state.auth.userData?._id);
     const navigate = useNavigate();
 
     const fetchUser = async () => {
+        setIsLoader(true); // Show loader before fetching data
         try {
             const res = await fetch(
                 `${conf.backendUser}/getUserByUsername/${username}`
@@ -49,6 +51,7 @@ const Profile = () => {
         } catch (error) {
             console.log(error);
         }
+        setIsLoader(false); // Hide loader after fetching data
     };
 
     useEffect(() => {
@@ -58,7 +61,7 @@ const Profile = () => {
     const color = useColorModeValue("black", "white");
     const cardBg = useColorModeValue("gray.200", "gray.700");
 
-    return (
+    return isLoader? <Loader/> : (
         <Box
             maxW="full"
             mx="auto"

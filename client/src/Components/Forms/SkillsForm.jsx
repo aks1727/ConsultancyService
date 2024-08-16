@@ -20,6 +20,8 @@ import { AddIcon, ArrowBackIcon } from "@chakra-ui/icons";
 import conf from "../../conf/conf";
 import { login } from "../../store/authSlice.js";
 import { NavLink, useNavigate } from "react-router-dom";
+import Loader from "../Loader/Loader.jsx";
+
 const skills = [
     "C++",
     "Java",
@@ -223,9 +225,11 @@ const SkillsForm = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [isLoader, setIsLoader] = useState(false)
 
     const onSubmit = async (data) => {
         // Make an API call to update user skills
+        setIsLoader(true)
         try {
             const response = await fetch(
                 `${conf.backendUser}/updateSkillsDetails`,
@@ -249,6 +253,7 @@ const SkillsForm = () => {
         } catch (error) {
             console.log(error);
         }
+        setIsLoader(true)
     };
 
     const handleAddSkill = (skill) => {
@@ -269,7 +274,7 @@ const SkillsForm = () => {
         skill.toLowerCase().includes(searchTerm.toLowerCase())
     );
 const linkColor = useColorModeValue("blue.500", "blue.300");
-    return (
+    return isLoader? <Loader/> : (
         <Box
             maxW="600px"
             alignSelf={"center"}

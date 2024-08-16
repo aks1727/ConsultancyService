@@ -21,6 +21,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../store/authSlice.js';
 import conf from "../../conf/conf";
 import AlertModal from '../alerts/AlertModal'; // Adjust the import path accordingly
+import Loader from "../Loader/Loader.jsx";
+
 
 const ExperienceForm = () => {
     const dispatch = useDispatch();
@@ -30,6 +32,7 @@ const ExperienceForm = () => {
     const [isAlertOpen, setIsAlertOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [formError, setFormError] = useState('');
+    const [isLoader, setIsLoader] = useState(false)
     const uniqueId = useId();
 
     const { handleSubmit, control, reset, formState: { errors }, getValues, setValue, clearErrors } = useForm({
@@ -52,6 +55,7 @@ const ExperienceForm = () => {
     }, [experiences, reset]);
 
     const onSubmit = async (data) => {
+        setIsLoader(true)
         if (data.experienceDetails.length === 0) {
             setFormError('Please add at least one experience entry.');
             return;
@@ -80,6 +84,7 @@ const ExperienceForm = () => {
             console.log(error);
             setFormError('Failed to save experience details.');
         }
+        setIsLoader(false)
     };
 
     const handleCheckClick = (index) => {
@@ -128,7 +133,7 @@ const ExperienceForm = () => {
     };
 
     const linkColor = useColorModeValue("blue.500", "blue.300");
-    return (
+    return isLoader ? <Loader/> : (
         <Box
             maxW="600px"
             mx="auto"
