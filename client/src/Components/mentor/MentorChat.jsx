@@ -139,6 +139,7 @@ const MentorChat = () => {
             const data = await res.json();
             
             socket?.emit("new message", data.data);
+            
             setMessages([...messages, data.data]);
             setNewMessage("");
         } catch (error) {

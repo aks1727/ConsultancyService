@@ -60,6 +60,7 @@ const Chat = () => {
                 }
             );
             const data = await response.json();
+            console.log(data)
             setChat(data.data);
             setCurrentChatDetails(data.data.mentorId);
         } catch (error) {
