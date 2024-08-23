@@ -28,6 +28,8 @@ import { useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import conf from "../../conf/conf";
 
+let socket;
+
 const MentorChat = () => {
     const navigate = useNavigate();
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -43,8 +45,12 @@ const MentorChat = () => {
     const userData = useSelector((state) => state.auth.userData);
     const toast = useToast();
 
-
     const lastMessageRef = useRef(null);
+    const scrollToBottom = () => {
+        if (lastMessageRef.current) {
+            lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    };
 
     const fetchChats = async () => {
         try {
@@ -71,6 +77,17 @@ const MentorChat = () => {
             );
             const data = await res.json();
             setMessages(data.data);
+            if (socketConnected) {
+                socket.emit("join chat", chatId);
+            } else {
+                toast({
+                    title: "Connection Error",
+                    description: "Socket is not connected",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
         } catch (error) {
             console.log(error);
         }
@@ -83,8 +100,7 @@ const MentorChat = () => {
             navigate("/feed");
         }
 
-
-        const socket = io(conf.backendSocket);
+        socket = io(conf.backendEndpoint);
         socket.emit("setup", userData);
         socket.on("connected", () => setSocketConnected(true));
         socket.on("disconnect", () => setSocketConnected(false));
@@ -94,19 +110,19 @@ const MentorChat = () => {
         return () => {
             socket.disconnect();
         };
-    }, [userData, chatId]);
+    }, [userData]);
 
     useEffect(() => {
-        if (chatId) {
-            fetchMessages(chatId);
+        if (messages.length > 0) {
+            scrollToBottom();
         }
-    }, [chatId]);
+    }, [messages]);
 
-        useEffect(() => {
-            if (lastMessageRef.current) {
-                lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
-            }
-        }, [messages]);
+    useEffect(() => {
+        socket?.on("message received", (newMessage) => {
+            setMessages([...messages, newMessage]);
+        });
+    });
 
     const handleSendMessage = async () => {
         if (newMessage.trim() === "") return;
@@ -121,6 +137,8 @@ const MentorChat = () => {
                 body: JSON.stringify({ chatId, content: newMessage }),
             });
             const data = await res.json();
+            
+            socket?.emit("new message", data.data);
             setMessages([...messages, data.data]);
             setNewMessage("");
         } catch (error) {
@@ -147,6 +165,8 @@ const MentorChat = () => {
             return;
         }
         setCurrentChatDetails(current);
+        await fetchMessages(chatId);
+        
     };
 
     return (
@@ -191,8 +211,7 @@ const MentorChat = () => {
                                 onClick={() => handleChatSelect(chat._id)}
                                 mb={2}
                                 p={3}
-                                bg={'transparent'
-                                }
+                                bg={"transparent"}
                                 borderRadius="md"
                                 _hover={{
                                     bg: useColorModeValue(
@@ -252,7 +271,7 @@ const MentorChat = () => {
                     >
                         <Box
                             bg={useColorModeValue("white", "gray.700")}
-                            px={4}
+                            px={{base: 20, md:4}}
                             py={3}
                             borderBottom="1px solid"
                             borderColor={useColorModeValue(
@@ -311,12 +330,13 @@ const MentorChat = () => {
                                 align="stretch"
                             >
                                 {messages.length > 0 ? (
-                                    messages.map((message,idx) => {
+                                    messages.map((message, idx) => {
                                         const isCurrentUser =
                                             message?.sender?._id ===
                                             userData?._id;
-                                        
-                            const isLastMessage = messages.length - 1 === idx;
+
+                                        const isLastMessage =
+                                            messages.length - 1 === idx;
                                         return (
                                             <HStack
                                                 key={message?._id}
@@ -466,8 +486,7 @@ const MentorChat = () => {
                                 }}
                                 mb={2}
                                 p={3}
-                                bg={ "transparent"
-                                }
+                                bg={"transparent"}
                                 borderRadius="md"
                                 _hover={{
                                     bg: useColorModeValue(

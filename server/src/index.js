@@ -31,22 +31,36 @@ connectDb()
         });
 
         io.on('connection', (socket) => {
-            console.log(`user connected: ${socket.id}`)
+            console.log(`user connected: ${socket.id}`.bgCyan)
 
             socket.on('setup', (userData) => {
-                console.log(userData._id)
+                console.log(`${userData._id}`.cyan)
                 socket.join(userData._id)
                 socket.emit('connected')
             })
 
-            socket.on('join chat', (room) => {
+            socket.on("join chat", (room) => {
                 socket.join(room)
-                console.log('user joined room ',room)
+                console.log(`'user joined room ' ${room}`.green)
             })
 
+            socket.on('new message', (newMessage) => {
+                const chat = newMessage.chat;
+
+                if (!chat.userId) console.log("chat.userid is not defined")
+                if (!chat.mentorId) console.log("chat.mentorId is not defined")
+                
+                if (newMessage.sender._id === chat.mentorId.userId._id) {
+                    socket.in(chat.userId._id).emit("message received",newMessage)
+                }
+                else if (newMessage.sender._id === chat.userId._id) {
+                    socket.in(chat.mentorId.userId._id).emit("message received",newMessage)
+                }
+
+            })
 
             socket.on('disconnect', () => {
-                console.log('user disconnected')
+                console.log('user disconnected'.red)
             })
         })
 

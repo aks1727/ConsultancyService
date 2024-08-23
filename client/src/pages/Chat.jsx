@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
     VStack,
     HStack,
@@ -16,6 +16,10 @@ import {
 import { IoSend } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import conf from "../conf/conf";
+import {io} from "socket.io-client"
+
+
+let socket;
 
 const Chat = () => {
     const { userId } = useParams();
@@ -23,12 +27,25 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [currentChatDetails, setCurrentChatDetails] = useState({});
-
+    const [socketConnected, setSocketConnected] = useState(false)
     const userData = useSelector((state) => state.auth.userData);
     const { colorMode } = useColorMode();
     const toast = useToast();
-
+    const navigate = useNavigate()
     const lastMessageRef = useRef(null);
+
+    useEffect(() => {
+        socket = io(conf.backendEndpoint);
+        socket?.emit("setup", userData);
+        socket?.on("connected", () => setSocketConnected(true));
+        socket?.on("disconnect", () => setSocketConnected(false));
+
+        fetchChat();
+
+        return () => {
+            socket?.disconnect();
+        };
+    }, [userId]);
 
     const fetchChat = async () => {
         try {
@@ -81,6 +98,7 @@ const Chat = () => {
                 }),
             });
             const data = await response.json();
+            socket?.emit("new message",data.data)
             setMessages([...messages, data.data]);
             setNewMessage("");
         } catch (error) {
@@ -88,21 +106,37 @@ const Chat = () => {
         }
     };
 
-    useEffect(() => {
-        fetchChat();
-    }, [userId]);
 
     useEffect(() => {
         if (chat?._id) {
-            fetchMessages(chat?._id);
+            if (socketConnected) {
+                socket?.emit("join chat", chat._id);
+            } else {
+                toast({
+                    title: "Connection Error",
+                    description: "Socket is not connected",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+            fetchMessages(chat._id);
         }
     }, [chat]);
+
+    useEffect(() => {
+        socket?.on("message received", (newMessage) => {
+            setMessages([...messages, newMessage]);
+        });
+    })
 
     useEffect(() => {
         if (lastMessageRef.current) {
             lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [messages]);
+
+    
 
     return (
         <Flex
