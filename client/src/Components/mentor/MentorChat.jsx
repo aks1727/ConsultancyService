@@ -100,7 +100,11 @@ const MentorChat = () => {
             navigate("/feed");
         }
 
-        socket = io(conf.backendEndpoint);
+        socket = io(conf.backendEndpoint,
+            {
+                withCredentials:true
+            }
+        );
         socket.emit("setup", userData);
         socket.on("connected", () => setSocketConnected(true));
         socket.on("disconnect", () => setSocketConnected(false));
