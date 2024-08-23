@@ -16,8 +16,7 @@ import {
 import { IoSend } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import conf from "../conf/conf";
-import {io} from "socket.io-client"
-
+import { io } from "socket.io-client";
 
 let socket;
 
@@ -27,16 +26,16 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [currentChatDetails, setCurrentChatDetails] = useState({});
-    const [socketConnected, setSocketConnected] = useState(false)
+    const [socketConnected, setSocketConnected] = useState(false);
     const userData = useSelector((state) => state.auth.userData);
     const { colorMode } = useColorMode();
     const toast = useToast();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const lastMessageRef = useRef(null);
 
     useEffect(() => {
         socket = io(conf.backendEndpoint, {
-            withCredentials:true
+            transports: ["websocket", "polling"],
         });
         socket?.emit("setup", userData);
         socket?.on("connected", () => setSocketConnected(true));
@@ -62,7 +61,7 @@ const Chat = () => {
                 }
             );
             const data = await response.json();
-            console.log(data)
+            console.log(data);
             setChat(data.data);
             setCurrentChatDetails(data.data.mentorId);
         } catch (error) {
@@ -101,14 +100,13 @@ const Chat = () => {
                 }),
             });
             const data = await response.json();
-            socket?.emit("new message",data.data)
+            socket?.emit("new message", data.data);
             setMessages([...messages, data.data]);
             setNewMessage("");
         } catch (error) {
             console.log(error);
         }
     };
-
 
     useEffect(() => {
         if (chat?._id) {
@@ -131,15 +129,13 @@ const Chat = () => {
         socket?.on("message received", (newMessage) => {
             setMessages([...messages, newMessage]);
         });
-    })
+    });
 
     useEffect(() => {
         if (lastMessageRef.current) {
             lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [messages]);
-
-    
 
     return (
         <Flex
@@ -186,8 +182,8 @@ const Chat = () => {
                 bg={useColorModeValue("white", "gray.800")}
                 css={{
                     "::-webkit-scrollbar": {
-                        display:"none"
-                    }, 
+                        display: "none",
+                    },
                 }}
             >
                 <VStack

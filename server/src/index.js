@@ -19,15 +19,16 @@ connectDb()
     .then(() => {
         const server = createServer(app)
         const io = new Server(server, {
-            pingTimeout:60000, // to close the connection 
+            pingTimeout: 60000, // to close the connection
             cors: {
                 origin: [
                     "https://nexadev-consultancy-service.vercel.app",
                     "http://localhost:5173",
                 ],
-                methods: ['GET', 'POST', 'PUT', 'DELETE'],
-                credentials:true
+                methods: ["GET", "POST", "PUT", "DELETE"],
+                credentials: true,
             },
+            transports: ["websocket", "polling"],
         });
 
         io.on('connection', (socket) => {
