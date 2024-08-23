@@ -131,6 +131,14 @@ const acceptMentorRequests = asyncHandler(async (req, res) => {
         throw new ApiError(404, "User not found");
     }
 
+    // check if mentor exists
+
+    const existingMentor = await Mentor.findOne({ userId: user._id });
+
+    if (existingMentor) {
+        throw new ApiError(403, "Mentor already exists for this user");
+    }
+
     const mentor = await Mentor.create(
         {
             userId: user._id,
@@ -144,7 +152,9 @@ const acceptMentorRequests = asyncHandler(async (req, res) => {
     if (!mentor) {
         throw new ApiError(500, "Error occurred while accepting mentor request");
     }
-
+    if (mentorRequest) {
+        const d = await MentorRequest.findByIdAndDelete(mentorRequest._id)
+    }
     user.isMentor = "yes";
     user.save({ validateBeforeSave: false });
 

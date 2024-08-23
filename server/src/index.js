@@ -6,6 +6,9 @@ dotenv.config({
 
 import connectDb from './db/db1.js';
 import app from './app.js';
+import { createServer } from 'http'
+import {Server} from 'socket.io'
+
 // console.log(process.env, "index");
 
 /**
@@ -14,14 +17,49 @@ import app from './app.js';
 
 connectDb()
     .then(() => {
-        app.listen(process.env.PORT || 8000, () => 
-            console.log(`Server listening on http://localhost:${process.env.PORT}`.yellow)
-        );
+        const server = createServer(app)
+        const io = new Server(server, {
+            pingTimeout:60000, // to close the connection 
+            cors: {
+                origin: [
+                    "https://nexadev-consultancy-service.vercel.app",
+                    "http://localhost:5173",
+                ],
+                methods: ['GET', 'POST', 'PUT', 'DELETE'],
+                credentials:true
+            },
+        });
+
+        io.on('connection', (socket) => {
+            console.log(`user connected: ${socket.id}`)
+
+            socket.on('setup', (userData) => {
+                console.log(userData._id)
+                socket.join(userData._id)
+                socket.emit('connected')
+            })
+
+            socket.on('join chat', (room) => {
+                socket.join(room)
+                console.log('user joined room ',room)
+            })
+
+
+            socket.on('disconnect', () => {
+                console.log('user disconnected')
+            })
+        })
+
+
+        server.listen(process.env.PORT || 8000, () => {
+            console.log(`listening on ${process.env.PORT}`)
+        })
+
         app.on('error', (err) => {
-            console.log(err.message);
+            console.log("Error: ",err.message);
             throw err;
         });
     })
     .catch((err) => {
-        console.log(err.message);
+        console.log("catch Error : ",err.message);
     });

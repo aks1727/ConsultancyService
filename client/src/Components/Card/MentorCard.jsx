@@ -18,7 +18,7 @@ import {
 import { FaCheckCircle, FaStar } from "react-icons/fa";
 import { FiPhoneCall, FiUser, FiTarget, FiFileText } from "react-icons/fi";
 import {NavLink} from "react-router-dom"
-const MentorCard = ({ mentor, userDetails }) => {
+const MentorCard = ({ mentor, userDetails ,id }) => {
     return (
         <Box
             borderWidth="1px"
@@ -147,11 +147,13 @@ const MentorCard = ({ mentor, userDetails }) => {
                             </HStack>
                         </VStack>
                         <Button
+                            as={NavLink}
+                            to={`/chat/${id}`}
                             colorScheme="blue"
                             size="sm"
                             w="full"
                         >
-                            Book One Time Mentorship @ ₹50
+                            Chat with mentor @ ₹50
                         </Button>
                     </VStack>
                 </Flex>

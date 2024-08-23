@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login as authLogin } from "../../store/authSlice.js";
 import {
     Button,
@@ -67,7 +67,10 @@ function Login() {
                 }
 
                 // Navigate to the home page
-                navigate("/feed");
+                if (userData.isMentor === 'yes') {
+                    navigate(`/mentor/${userData.username}`);
+                }
+                else navigate("/feed");
             } else {
                 // Handle login error
                 const errorData = await session.json();
@@ -86,6 +89,8 @@ function Login() {
     const textColor = useColorModeValue("black", "white");
     const errorColor = useColorModeValue("red.600", "red.400");
     const linkColor = useColorModeValue("blue.500", "blue.300");
+
+
 
     return isLoader ? <Loader/>: (
         <Flex

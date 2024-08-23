@@ -40,6 +40,9 @@ import {
     FaUserCog,
     FaTrophy,
     FaHome,
+    FaSearch,
+    FaUserFriends,
+    FaStream
 } from "react-icons/fa";
 import AdminLayout from "./Components/admin/Layout/AdminLayout.jsx";
 import AdminBase from "./Components/admin/AdminBase.jsx";
@@ -47,6 +50,11 @@ import AdminHome from "./Components/admin/pages/AdminHome.jsx";
 import AdminLogin from "./Components/admin/pages/AdminLogin.jsx";
 import AcceptMentorRequests from "./Components/admin/pages/AcceptMentorRequests.jsx";
 import Profile from "./pages/Profile.jsx";
+import MentorChat from "./Components/mentor/MentorChat.jsx";
+import Chat from "./pages/Chat.jsx";
+import ChatLayout from "./Components/Layout/ChatLayout.jsx";
+;
+
 
 const router = createBrowserRouter([
     {
@@ -85,7 +93,41 @@ const router = createBrowserRouter([
                         path: "profile/u/:username",
                         element: <Profile />,
                     },
+
+                    {
+                        path: "/chatsd1f5702df5792711e9e30911c9489236",
+                        element: <MentorChat />,
+                    },
                 ],
+            },
+            {
+                path: "chat/:userId",
+                element: (
+                    <ChatLayout
+                        Navitems={[
+                            {
+                                label: "Feed",
+                                href: "/feed",
+                                icon: FaHome,
+                            },
+                            {
+                                label: "Search",
+                                href: "/search",
+                                icon: FaSearch,
+                            },
+                            {
+                                label: "Mentorship",
+                                href: "/mentorship",
+                                icon: FaUserFriends,
+                            },
+                            {
+                                label: "Roadmaps",
+                                href: "/roadmaps",
+                                icon: FaStream,
+                            },
+                        ]}
+                    />
+                ),
             },
             {
                 path: "/update-details",
@@ -237,7 +279,10 @@ const router = createBrowserRouter([
         path: "/admin62edbdaac78f76f00ef050563669970b/admin-login",
         element: <AdminLogin />,
     },
-
+    {
+        path: "/mentor/:username",
+        element: <MentorChat />,
+    },
     {
         path: "*",
         element: <NotFound />,
@@ -245,11 +290,11 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-    <React.StrictMode>
+    
         <ChakraProvider>
             <Provider store={store}>
                 <RouterProvider router={router} />
             </Provider>
         </ChakraProvider>
-    </React.StrictMode>
+
 );

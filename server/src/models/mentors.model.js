@@ -22,7 +22,7 @@ const mentorSchema = new Schema({
             "Career Consultant",
             "Fitness Coach",
             "Exam/College Consultancy",
-            "Freelancers Consultant",
+            "Freelancer Consultant",
             "HealthCare Consultant",
             "Business Consultant",
             "Social Media Consultant",

@@ -138,10 +138,12 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                         />
                         {authStatus ? (
                             <>
-                                {userData?.isMentor==='yes' ? (
+                                {userData?.isMentor === "yes" ? (
                                     <Button
                                         as={NavLink}
-                                        to={"/chats"}
+                                        to={
+                                            "/chatsd1f5702df5792711e9e30911c9489236"
+                                        }
                                         fontSize={"sm"}
                                         fontWeight={600}
                                         color={"white"}
@@ -157,7 +159,11 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                 ) : (
                                     <Button
                                         as={NavLink}
-                                        to={ userData?.isMentor ==='pending'? "/become-mentor/3" :"/become-mentor/0"}
+                                        to={
+                                            userData?.isMentor === "pending"
+                                                ? "/become-mentor/3"
+                                                : "/become-mentor/0"
+                                        }
                                         fontSize={"sm"}
                                         fontWeight={600}
                                         color={"white"}
@@ -238,10 +244,12 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                         align={"center"}
                     >
                         {authStatus &&
-                            (userData?.isMentor ? (
+                            (userData?.isMentor ==='yes' ? (
                                 <Button
                                     as={NavLink}
-                                    to={"/chats"}
+                                    to={
+                                        "/chatsd1f5702df5792711e9e30911c9489236"
+                                    }
                                     fontSize={"sm"}
                                     fontWeight={600}
                                     color={"white"}

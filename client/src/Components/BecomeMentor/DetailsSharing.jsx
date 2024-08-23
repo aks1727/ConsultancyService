@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -26,8 +26,10 @@ const DetailsSharing = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [isLoader, setIsLoader] = useState(false)
+    const [error, setError] = useState("")
 
     const onSubmit = async (data) => {
+        setError("")
         setIsLoader(true)
         console.log(data);
         try {
@@ -39,15 +41,15 @@ const DetailsSharing = () => {
                 body: JSON.stringify({ ...data }),
                 credentials: "include",
             });
+            const resData = await res.json();
             if (res.ok) {
-                const resData = await res.json();
                 dispatch(login(resData.data));
                 navigate("/become-mentor/3");
             } else {
-                throw new Error("Failed to submit");
+                throw new Error(resData.message);
             }
         } catch (error) {
-            console.log(error);
+            setError(error.message)
         }
         setIsLoader(false)
     };
@@ -55,12 +57,15 @@ const DetailsSharing = () => {
     const linkedinProfile = watch("linkedinProfile");
     const resumeLink = watch("resumeLink");
 
+
+
     return isLoader ? <Loader/> : (
         <Box
             p={8}
             maxWidth="500px"
             mx="auto"
         >
+            {error && <Text color={'red'}>{error}</Text>}
             <form onSubmit={handleSubmit(onSubmit)}>
                 <VStack spacing={4}>
                     <FormControl

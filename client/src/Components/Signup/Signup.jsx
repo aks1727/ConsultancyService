@@ -40,7 +40,10 @@ function Signup() {
             }
             const userData = await response.json();
             dispatch(authLogin(userData.data))
-            navigate("/feed");
+            if (userData.data.isMentor === 'yes') {
+                navigate(`/mentor/${userData.data.username}`);
+            }
+            else navigate("/feed");
         } catch (err) {
             console.log(err);
             setError(err.message);

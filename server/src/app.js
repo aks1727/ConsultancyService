@@ -22,11 +22,13 @@ app.use(cors({
 import userRouter from './routes/user.routes.js';
 import adminRouter from './routes/admin.routes.js';
 import searchRouter from "./routes/search.routes.js";
+import chatRouter from "./routes/chat.routes.js"
+import messageRouter from "./routes/message.routes.js"
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/admin', adminRouter)
 app.use('/api/v1/searches', searchRouter)
-
-
+app.use("/api/v1/chats", chatRouter);
+app.use('/api/v1/message',messageRouter)
 
 
 // for any error I am using this to send the error properly to frontend 

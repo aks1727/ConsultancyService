@@ -114,7 +114,7 @@ const AchievementsForm = () => {
             const originalData = achievements[index];
             setValue(`achievementDetails[${index}].organization`, originalData.organization);
             setValue(`achievementDetails[${index}].achievement`, originalData.achievement);
-            setValue(`achievementDetails[${index}].date`, originalData.date);
+            setValue(`achievementDetails[${index}].date`,  originalData.date);
             setValue(`achievementDetails[${index}].url`, originalData.url);
             clearErrors(`achievementDetails[${index}]`); // Clear errors for the current field
         } else {
