@@ -34,6 +34,11 @@ const Chat = () => {
     const lastMessageRef = useRef(null);
 
     useEffect(() => {
+
+        if (!userData) {
+            navigate('/login')
+        }
+            
         socket = io(conf.backendEndpoint, {
             transports: ["websocket", "polling"],
         });
