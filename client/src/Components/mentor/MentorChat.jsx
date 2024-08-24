@@ -79,14 +79,6 @@ const MentorChat = () => {
             setMessages(data.data);
             if (socketConnected) {
                 socket.emit("join chat", chatId);
-            } else {
-                toast({
-                    title: "Connection Error",
-                    description: "Socket is not connected",
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                });
             }
         } catch (error) {
             console.log(error);
@@ -128,8 +120,9 @@ const MentorChat = () => {
 
     const handleSendMessage = async () => {
         if (newMessage.trim() === "") return;
-
+        
         try {
+            setNewMessage("");
             const res = await fetch(`${conf.backendMessage}/sendMessage`, {
                 method: "POST",
                 headers: {
@@ -143,7 +136,6 @@ const MentorChat = () => {
             socket?.emit("new message", data.data);
             
             setMessages([...messages, data.data]);
-            setNewMessage("");
         } catch (error) {
             console.log(error);
         }
