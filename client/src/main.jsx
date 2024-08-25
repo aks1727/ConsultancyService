@@ -53,6 +53,7 @@ import Profile from "./pages/Profile.jsx";
 import MentorChat from "./Components/mentor/MentorChat.jsx";
 import Chat from "./pages/Chat.jsx";
 import ChatLayout from "./Components/Layout/ChatLayout.jsx";
+import ChangePassword from "./Components/ChangePassword.jsx";
 ;
 
 
@@ -128,6 +129,10 @@ const router = createBrowserRouter([
                         ]}
                     />
                 ),
+            },
+            {
+                path: 'changePassword',
+                element:<ChangePassword/>
             },
             {
                 path: "/update-details",

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { login as authLogin } from "../../store/authSlice.js";
 import {
@@ -92,7 +92,9 @@ function Login() {
 
 
 
-    return isLoader ? <Loader/>: (
+    return isLoader ? (
+        <Loader />
+    ) : (
         <Flex
             align="center"
             justify="center"
@@ -215,6 +217,14 @@ function Login() {
                         >
                             Sign in
                         </Button>
+                        {error === "Passwords do not match" && (
+                            <Text
+                                as={NavLink}
+                                to={"/changePassword"}
+                            >
+                                Change your password here
+                            </Text>
+                        )}
                     </VStack>
                 </form>
             </Box>
