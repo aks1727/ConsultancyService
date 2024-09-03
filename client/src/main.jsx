@@ -66,9 +66,34 @@ const router = createBrowserRouter([
                 path: "/",
                 element: <Home />,
             },
+
             {
-                path: 'verification/:data',
-                element:<Verfication/>
+                path: "chat/:userId",
+                element: (
+                    <ChatLayout
+                        Navitems={[
+                            {
+                                label: "Search",
+                                href: "/search",
+                                icon: FaSearch,
+                            },
+                            {
+                                label: "Mentorship",
+                                href: "/mentorship",
+                                icon: FaUserFriends,
+                            },
+                            {
+                                label: "Roadmaps",
+                                href: "/roadmaps",
+                                icon: FaStream,
+                            },
+                        ]}
+                    />
+                ),
+            },
+            {
+                path: "verification/:data",
+                element: <Verfication />,
             },
             {
                 path: "/",
@@ -102,32 +127,8 @@ const router = createBrowserRouter([
                 ],
             },
             {
-                path: "chat/:userId",
-                element: (
-                    <ChatLayout
-                        Navitems={[
-                            {
-                                label: "Search",
-                                href: "/search",
-                                icon: FaSearch,
-                            },
-                            {
-                                label: "Mentorship",
-                                href: "/mentorship",
-                                icon: FaUserFriends,
-                            },
-                            {
-                                label: "Roadmaps",
-                                href: "/roadmaps",
-                                icon: FaStream,
-                            },
-                        ]}
-                    />
-                ),
-            },
-            {
-                path: 'changePassword',
-                element:<ChangePassword/>
+                path: "changePassword",
+                element: <ChangePassword />,
             },
             {
                 path: "/update-details",

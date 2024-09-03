@@ -12,6 +12,7 @@ import {
     useToast,
     useColorMode,
     useColorModeValue,
+    Spinner,
 } from "@chakra-ui/react";
 import { IoSend } from "react-icons/io5";
 import { useSelector } from "react-redux";
@@ -27,31 +28,41 @@ const Chat = () => {
     const [newMessage, setNewMessage] = useState("");
     const [currentChatDetails, setCurrentChatDetails] = useState({});
     const [socketConnected, setSocketConnected] = useState(false);
-    const userData = useSelector((state) => state.auth.userData);
+    const [loadingMessages, setLoadingMessages] = useState(true);
+    const [loadingUser, setLoadingUser] = useState(true);
     const { colorMode } = useColorMode();
     const toast = useToast();
     const navigate = useNavigate();
     const lastMessageRef = useRef(null);
 
-    useEffect(() => {
+    const userData = useSelector((state) => state.auth.userData);
 
+    useEffect(() => {
         if (!userData) {
-            navigate('/login')
+            navigate("/login");
+            return;
         }
-            
+
+        setLoadingUser(false);
+
         socket = io(conf.backendEndpoint, {
             transports: ["websocket", "polling"],
         });
-        socket?.emit("setup", userData);
-        socket?.on("connected", () => setSocketConnected(true));
-        socket?.on("disconnect", () => setSocketConnected(false));
+
+        socket.on("connected", () => setSocketConnected(true));
+        socket.on("disconnect", () => setSocketConnected(false));
+        socket.on("message received", (newMessage) => {
+            console.log("Message received:", newMessage);
+            setMessages((prevMessages) => [...prevMessages, newMessage]);
+        });
 
         fetchChat();
 
         return () => {
-            socket?.disconnect();
+            socket.disconnect();
+            socket.off("message received");
         };
-    }, [userId]);
+    }, [userData, navigate]);
 
     const fetchChat = async () => {
         try {
@@ -66,11 +77,17 @@ const Chat = () => {
                 }
             );
             const data = await response.json();
-            console.log(data);
             setChat(data.data);
             setCurrentChatDetails(data.data.mentorId);
+            fetchMessages(data.data._id);
         } catch (error) {
-            console.log(error);
+            toast({
+                title: "Error fetching chat",
+                description: "An error occurred while fetching chat details.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
         }
     };
 
@@ -85,13 +102,34 @@ const Chat = () => {
             const data = await response.json();
             setMessages(data.data);
         } catch (error) {
-            console.log(error);
+            toast({
+                title: "Error fetching messages",
+                description: "An error occurred while fetching messages.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
+        } finally {
+            setLoadingMessages(false);
         }
     };
 
-    const handleSendMessage = async () => {
+    const handleSendMessage = async (e) => {
+        e.preventDefault()
         if (newMessage.trim() === "") return;
+        const newmsg1 = {
+            chatId: chat?._id,
+            content: newMessage,
+            sender: {
+                _id: userData?._id,
+                name: userData?.name,
+                avatar: userData?.avatar,
+            },
+            _id: Date.now(),
+        };
 
+        setMessages((prevMessages) => [...prevMessages, newmsg1]);
+        setNewMessage("");
         try {
             const response = await fetch(`${conf.backendMessage}/sendMessage`, {
                 method: "POST",
@@ -105,36 +143,24 @@ const Chat = () => {
                 }),
             });
             const data = await response.json();
+            console.log("Message sent:", data.data);
             socket?.emit("new message", data.data);
-            setMessages([...messages, data.data]);
-            setNewMessage("");
         } catch (error) {
-            console.log(error);
+            toast({
+                title: "Error sending message",
+                description: "An error occurred while sending the message.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
         }
     };
 
     useEffect(() => {
-        if (chat?._id) {
-            if (socketConnected) {
-                socket?.emit("join chat", chat._id);
-            } else {
-                toast({
-                    title: "Connection Error",
-                    description: "Socket is not connected",
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                });
-            }
-            fetchMessages(chat._id);
+        if (chat?._id && socketConnected) {
+            socket?.emit("join chat", chat._id);
         }
-    }, [chat]);
-
-    useEffect(() => {
-        socket?.on("message received", (newMessage) => {
-            setMessages([...messages, newMessage]);
-        });
-    });
+    }, [chat, socketConnected]);
 
     useEffect(() => {
         if (lastMessageRef.current) {
@@ -142,10 +168,26 @@ const Chat = () => {
         }
     }, [messages]);
 
+    if (loadingUser) {
+        return (
+            <Flex
+                direction="column"
+                height="calc(100vh - 60px)"
+                maxW={{ base: "100%", md: "80%" }}
+                mx="auto"
+                bg={useColorModeValue("gray.50", "gray.900")}
+                align="center"
+                justify="center"
+            >
+                <Spinner size="xl" />
+            </Flex>
+        );
+    }
+
     return (
         <Flex
             direction="column"
-            height="calc(100vh - 60px)" // Adjust based on your navbar height
+            height="calc(100vh - 60px)"
             maxW={{ base: "100%", md: "80%" }}
             mx="auto"
             bg={useColorModeValue("gray.50", "gray.900")}
@@ -182,20 +224,24 @@ const Chat = () => {
             {/* Chat Messages */}
             <Box
                 flex="1"
-                overflowY="auto" // Make messages scrollable
+                overflowY="auto"
                 p={4}
                 bg={useColorModeValue("white", "gray.800")}
-                css={{
-                    "::-webkit-scrollbar": {
-                        display: "none",
-                    },
-                }}
+                css={{ "::-webkit-scrollbar": { display: "none" } }}
             >
                 <VStack
                     spacing={4}
                     align="stretch"
                 >
-                    {messages.length > 0 ? (
+                    {loadingMessages ? (
+                        <Flex
+                            justify="center"
+                            align="center"
+                            height="100%"
+                        >
+                            <Spinner size="xl" />
+                        </Flex>
+                    ) : messages.length > 0 ? (
                         messages.map((message, idx) => {
                             const isCurrentUser =
                                 message?.sender?._id === userData?._id;
@@ -254,33 +300,31 @@ const Chat = () => {
                 </VStack>
             </Box>
 
-            {/* Message Input */}
-            <HStack
-                p={4}
-                bg={useColorModeValue("white", "gray.700")}
-                borderTop="1px solid"
-                borderColor={useColorModeValue("gray.200", "gray.700")}
-                position="sticky"
-                bottom="0"
-                width="100%"
-            >
-                <Input
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type a message..."
+            {/* Chat Input */}
+            <form>
+                <HStack
+                    p={4}
                     bg={useColorModeValue("white", "gray.800")}
-                    boxShadow="md"
-                    flex="1"
-                />
-                <IconButton
-                    type="submit"
-                    onClick={handleSendMessage}
-                    icon={<IoSend />}
-                    aria-label="Send message"
-                    colorScheme="blue"
-                    variant="solid"
-                />
-            </HStack>
+                    borderTop="1px solid"
+                    borderColor={useColorModeValue("gray.200", "gray.700")}
+                    spacing={3}
+                >
+                    <Input
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="Type a message..."
+                        size="md"
+                        bg={useColorModeValue("gray.100", "gray.700")}
+                    />
+                    <IconButton
+                        type="submit"
+                        icon={<IoSend />}
+                        onClick={handleSendMessage}
+                        colorScheme="blue"
+                        aria-label="Send message"
+                    />
+                </HStack>
+            </form>
         </Flex>
     );
 };

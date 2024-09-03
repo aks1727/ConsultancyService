@@ -1,9 +1,7 @@
 import React from "react";
 import {
     Box,
-    Image,
     Text,
-    Link,
     VStack,
     Heading,
     Tag,
@@ -14,23 +12,40 @@ import {
     Flex,
     Divider,
     Avatar,
+    Badge,
+    Stack,
 } from "@chakra-ui/react";
 import { FaCheckCircle, FaStar } from "react-icons/fa";
-import { FiPhoneCall, FiUser, FiTarget, FiFileText } from "react-icons/fi";
-import {NavLink} from "react-router-dom"
-const MentorCard = ({ mentor, userDetails ,id }) => {
+import { FiUser, FiTarget, FiAward } from "react-icons/fi";
+import { NavLink } from "react-router-dom";
+
+const MentorCard = ({ mentor, userDetails, id }) => {
+    const cardBg = useColorModeValue(
+        "linear-gradient(to bottom, #f9f9f9, #ffffff)",
+        "linear-gradient(to bottom, #2D3748, #1A202C)"
+    );
+    const borderColor = useColorModeValue("gray.200", "gray.600");
+    const headingColor = useColorModeValue("blue.600", "blue.300");
+    const textColor = useColorModeValue("gray.700", "gray.300");
+
     return (
         <Box
             borderWidth="1px"
             borderRadius="lg"
             overflow="hidden"
             p={6}
-            bg={useColorModeValue("white", "gray.800")}
+            bg={cardBg}
             color={useColorModeValue("black", "white")}
-            shadow="md"
+            shadow="lg"
             maxW="100%"
-            width={"100%"}
-            mt={2}
+            width="100%"
+            mt={4}
+            borderColor={borderColor}
+            transition="all 0.3s"
+            _hover={{
+                boxShadow: "2xl",
+                transform: "scale(1.02)",
+            }}
         >
             <HStack
                 align="start"
@@ -38,8 +53,8 @@ const MentorCard = ({ mentor, userDetails ,id }) => {
             >
                 <Flex
                     flexDirection={{ base: "column", md: "row" }}
-                    justifyContent={"space-between"}
-                    width={"100%"}
+                    justifyContent="space-between"
+                    width="100%"
                 >
                     {/* Left Section */}
                     <VStack
@@ -49,55 +64,86 @@ const MentorCard = ({ mentor, userDetails ,id }) => {
                     >
                         <HStack spacing={4}>
                             <Avatar
-                                boxSize="100px"
+                                boxSize="120px"
                                 src={userDetails?.avatar}
                                 name={userDetails?.name}
                                 alt={`${userDetails?.name}'s avatar`}
+                                shadow="md"
+                                border="2px solid"
+                                borderColor={headingColor}
                             />
                             <VStack
                                 align="start"
-                                spacing={0}
+                                spacing={2}
                             >
                                 <NavLink
                                     to={`/profile/u/${userDetails?.username}`}
                                 >
-                                    <Heading size="lg">
+                                    <Heading
+                                        size="lg"
+                                        color={headingColor}
+                                    >
                                         {userDetails?.name}{" "}
                                         <Icon
                                             as={FaCheckCircle}
                                             color="blue.500"
                                         />
                                     </Heading>
-                                    <Text color="blue.400">
+                                    <Text
+                                        color="blue.400"
+                                        fontWeight="bold"
+                                    >
                                         @{userDetails?.username}
                                     </Text>
                                 </NavLink>
-                                <Text>
-                                    {userDetails?.experiences?.map((exp) =>
-                                        exp.isWorking === true
-                                            ? `${exp.title} @ ${exp.company}`
-                                            : ""
-                                    )}
+                                <Text
+                                    fontSize="sm"
+                                    color={textColor}
+                                >
+                                    {userDetails?.experiences
+                                        ?.filter((exp) => exp.isWorking)
+                                        .map(
+                                            (exp) =>
+                                                `${exp.title} @ ${exp.company}`
+                                        )
+                                        .join(", ")}
                                 </Text>
                             </VStack>
                         </HStack>
-                        <Text color="gray.400">{userDetails?.bio}</Text>
+                        <Text
+                            color={textColor}
+                            fontSize="sm"
+                        >
+                            {userDetails?.bio}
+                        </Text>
                         <HStack
                             spacing={4}
                             align="center"
                         >
-                            <Icon
-                                as={FaStar}
-                                color="yellow.400"
-                            />
-                            <Text>{mentor?.rating} Ratings</Text>
-                            <Icon
-                                as={FaCheckCircle}
-                                color="green.400"
-                            />
-                            <Text>
-                                {mentor?.sessionsTaken} Sessions Completed
-                            </Text>
+                            <HStack spacing={2}>
+                                <Icon
+                                    as={FaStar}
+                                    color="yellow.400"
+                                />
+                                <Text
+                                    fontWeight="bold"
+                                    color={textColor}
+                                >
+                                    {mentor?.rating} Ratings
+                                </Text>
+                            </HStack>
+                            <HStack spacing={2}>
+                                <Icon
+                                    as={FaCheckCircle}
+                                    color="green.400"
+                                />
+                                <Text
+                                    fontWeight="bold"
+                                    color={textColor}
+                                >
+                                    {mentor?.sessionsTaken} Sessions Completed
+                                </Text>
+                            </HStack>
                         </HStack>
                         <HStack
                             spacing={2}
@@ -107,36 +153,53 @@ const MentorCard = ({ mentor, userDetails ,id }) => {
                                 <Tag
                                     key={index}
                                     colorScheme="blue"
+                                    borderRadius="full"
+                                    p={2}
                                 >
                                     {skill}
                                 </Tag>
                             ))}
                         </HStack>
+                        <Stack spacing={2}>
+                            {userDetails?.certifications?.map((cert, index) => (
+                                <Badge
+                                    key={index}
+                                    colorScheme="green"
+                                    variant="subtle"
+                                >
+                                    <Icon
+                                        as={FiAward}
+                                        mr={2}
+                                    />{" "}
+                                    {cert}
+                                </Badge>
+                            ))}
+                        </Stack>
                     </VStack>
+
                     {/* Right Section */}
                     <VStack
                         align="start"
                         spacing={4}
                         flex="0.6"
                     >
-                        <Text>What this Mentor offers:</Text>
+                        <Divider borderColor={borderColor} />
+                        <Text
+                            fontWeight="bold"
+                            color={headingColor}
+                        >
+                            What this Mentor Offers:
+                        </Text>
                         <VStack
                             align="start"
                             spacing={3}
                         >
-                            {/* <HStack>
-                                <Icon
-                                    as={FiPhoneCall}
-                                    color="orange.400"
-                                />
-                                <Text>Audio/Video Sessions</Text>
-                            </HStack> */}
                             <HStack>
                                 <Icon
                                     as={FiUser}
                                     color="purple.400"
                                 />
-                                <Text> Chat Sessions</Text>
+                                <Text>Chat Sessions</Text>
                             </HStack>
                             <HStack>
                                 <Icon
@@ -150,8 +213,14 @@ const MentorCard = ({ mentor, userDetails ,id }) => {
                             as={NavLink}
                             to={`/chat/${id}`}
                             colorScheme="blue"
-                            size="sm"
+                            size="md"
                             w="full"
+                            shadow="md"
+                            transition="background-color 0.2s, transform 0.2s"
+                            _hover={{
+                                bg: useColorModeValue("blue.400", "blue.600"),
+                                transform: "translateY(-2px)",
+                            }}
                         >
                             Chat with mentor @ ₹50
                         </Button>
