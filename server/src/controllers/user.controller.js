@@ -4,6 +4,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { MentorRequest } from "../models/mentorRequest.model.js";
+import { sendTheMail } from "../utils/mailSending.js";
 
 // console.log("user controller")
 const accessTokenOptions = {
@@ -19,6 +20,7 @@ const refreshTokenOptions = {
     sameSite: "None",
     maxAge: 30 * 24 * 60 * 60 * 1000,
 };
+
 
 const generateTokens = async (userId) => {
     try {
@@ -70,6 +72,9 @@ const registerUser = asyncHandler(async (req, res) => {
     const finalUser = await User.findById(user._id).select(
         "-password -refreshToken"
     );
+
+    sendTheMail(email,finalUser.name,user._id);
+
 
     return res
         .status(200)
@@ -395,6 +400,26 @@ const submitMentorRegistrationForm = asyncHandler(async (req, res) => {
         );
 });
 
+const verifyMail = asyncHandler(async (req, res) => {
+    const { userId } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    // Ensure the field exists
+    if (typeof user.isEmailVerified === "undefined") {
+        user.isEmailVerified = false; // or true, depending on your requirement
+    }
+
+    user.isEmailVerified = true;
+    await user.save({ validateBeforeSave: false });
+
+    return res.status(200).json({ msg: "Verification Done successfully"});
+});
+
+
 export default {
     // basic authentication
     registerUser,
@@ -403,6 +428,7 @@ export default {
     changeUserPassword,
     getCurrentUser,
     getUserByusername,
+    verifyMail,
 
     // updation methods
     updateEducationDetails,

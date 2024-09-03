@@ -21,6 +21,6 @@ router.route('/updateAchievementDetails').post(verifyJWT,user.updateAchievements
 router.route('/updateProfile').post(verifyJWT,upload.single("avatar"),user.updateProfile)
 router.route('/submitMentorRequest').post(verifyJWT, user.submitMentorRegistrationForm)
 router.route('/getUserByusername/:username').get(user.getUserByusername)
-
+router.route("/updateVerified").post(user.verifyMail);
 
 export default router;

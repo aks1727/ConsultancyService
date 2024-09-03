@@ -31,8 +31,9 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
     const authStatus = useSelector((state) => state.auth.status);
     const isMobile = useBreakpointValue({ base: true, md: false });
     const userData = useSelector((state) => state.auth.userData);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const dispatch = useDispatch();
+
     const logoutHandler = async () => {
         try {
             await fetch(`${conf.backendUser}/logout`, {
@@ -46,18 +47,18 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
         }
     };
 
-
-    useEffect(()=>{
-        // console.log(userData)
-    },[userData])
-
     return (
         <Box
             zIndex={9999}
             position="fixed"
             w="100%"
-            bg={useColorModeValue("white", "gray.800")}
+            bg={useColorModeValue(
+                "linear-gradient(45deg, #f3f4f6, #e2e8f0)",
+                "linear-gradient(45deg, #2d3748, #1a202c)"
+            )}
             px={8}
+            boxShadow="0 4px 6px rgba(0, 0, 0, 0.1)"
+            transition="background-color 0.3s ease, box-shadow 0.3s ease"
         >
             <Flex
                 color={useColorModeValue("gray.600", "white")}
@@ -68,6 +69,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                 align={"center"}
                 w="100%"
                 justify="space-between"
+                transition="padding 0.3s ease"
             >
                 <Flex
                     flex={{ base: 1 }}
@@ -90,6 +92,8 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                 }
                                 variant={"ghost"}
                                 aria-label={"Toggle Navigation"}
+                                transition="transform 0.3s ease"
+                                _hover={{ transform: "scale(1.1)" }}
                             />
                         </Flex>
                     )}
@@ -102,6 +106,9 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                         })}
                         fontFamily={"heading"}
                         color={useColorModeValue("gray.800", "white")}
+                        fontSize="xl"
+                        fontWeight="bold"
+                        letterSpacing="wide"
                     >
                         <NavLink to="/">Logo</NavLink>
                     </Text>
@@ -134,7 +141,14 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                 )
                             }
                             onClick={toggleColorMode}
-                            variant="ghost"
+                            variant="outline"
+                            borderWidth={2}
+                            borderColor={useColorModeValue(
+                                "gray.600",
+                                "gray.200"
+                            )}
+                            transition="background-color 0.3s ease, transform 0.3s ease"
+                            _hover={{ transform: "scale(1.1)" }}
                         />
                         {authStatus ? (
                             <>
@@ -153,6 +167,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                             base: "inline-flex",
                                             md: "inline-flex",
                                         }}
+                                        transition="background-color 0.3s ease"
                                     >
                                         Chats
                                     </Button>
@@ -173,6 +188,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                             base: "inline-flex",
                                             md: "inline-flex",
                                         }}
+                                        transition="background-color 0.3s ease"
                                     >
                                         Become Mentor
                                     </Button>
@@ -184,6 +200,8 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                         variant={"link"}
                                         cursor={"pointer"}
                                         minW={0}
+                                        transition="transform 0.3s ease"
+                                        _hover={{ transform: "scale(1.05)" }}
                                     >
                                         <Avatar
                                             size={"sm"}
@@ -228,6 +246,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                     color={"white"}
                                     bg={"pink.400"}
                                     _hover={{ bg: "pink.300" }}
+                                    transition="background-color 0.3s ease"
                                 >
                                     Sign Up
                                 </Button>
@@ -244,7 +263,7 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                         align={"center"}
                     >
                         {authStatus &&
-                            (userData?.isMentor ==='yes' ? (
+                            (userData?.isMentor === "yes" ? (
                                 <Button
                                     as={NavLink}
                                     to={
@@ -259,13 +278,18 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                         base: "inline-flex",
                                         md: "inline-flex",
                                     }}
+                                    transition="background-color 0.3s ease"
                                 >
                                     Chats
                                 </Button>
                             ) : (
                                 <Button
                                     as={NavLink}
-                                    to={"/become-mentor/0"}
+                                    to={
+                                        userData?.isMentor === "pending"
+                                            ? "/become-mentor/3"
+                                            : "/become-mentor/0"
+                                    }
                                     fontSize={"sm"}
                                     fontWeight={600}
                                     color={"white"}
@@ -275,114 +299,15 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
                                         base: "inline-flex",
                                         md: "inline-flex",
                                     }}
+                                    transition="background-color 0.3s ease"
                                 >
                                     Become Mentor
                                 </Button>
                             ))}
-                        {authStatus && (
-                            <Menu>
-                                <MenuButton
-                                    as={Box}
-                                    rounded={"full"}
-                                    variant={"link"}
-                                    cursor={"pointer"}
-                                    minW={0}
-                                >
-                                    <Avatar
-                                        size={"sm"}
-                                        name={userData?.name}
-                                        src={userData?.avatar}
-                                    />
-                                </MenuButton>
-                                <MenuList>
-                                    <MenuItem
-                                        as={NavLink}
-                                        to={`/profile/u/${userData?.username}`}
-                                    >
-                                        Profile
-                                    </MenuItem>
-                                    <MenuDivider />
-                                    <MenuItem onClick={logoutHandler}>
-                                        Logout
-                                    </MenuItem>
-
-                                    <MenuItem onClick={toggleColorMode}>
-                                        <IconButton
-                                            aria-label="Toggle theme"
-                                            icon={
-                                                colorMode === "light" ? (
-                                                    <MoonIcon />
-                                                ) : (
-                                                    <SunIcon />
-                                                )
-                                            }
-                                            variant="ghost"
-                                        />
-                                    </MenuItem>
-                                </MenuList>
-                            </Menu>
-                        )}
-                        {!authStatus && (
-                            <Menu>
-                                <MenuButton
-                                    as={Button}
-                                    rounded={"full"}
-                                    variant={"link"}
-                                    cursor={"pointer"}
-                                    minW={0}
-                                >
-                                    <Avatar
-                                        size={"sm"}
-                                        src={"https://bit.ly/broken-link"}
-                                    />
-                                </MenuButton>
-                                <MenuList>
-                                    <MenuItem
-                                        as={NavLink}
-                                        to="/login"
-                                    >
-                                        Login
-                                    </MenuItem>
-                                    <MenuDivider />
-                                    <MenuItem
-                                        as={NavLink}
-                                        to={"/signup"}
-                                    >
-                                        <Button
-                                            display={{
-                                                base: "inline-flex",
-                                                md: "inline-flex",
-                                            }}
-                                            fontSize={"sm"}
-                                            fontWeight={600}
-                                            color={"white"}
-                                            bg={"pink.400"}
-                                            _hover={{ bg: "pink.300" }}
-                                        >
-                                            Sign Up
-                                        </Button>
-                                    </MenuItem>
-                                    <MenuItem onClick={toggleColorMode}>
-                                        <IconButton
-                                            aria-label="Toggle theme"
-                                            icon={
-                                                colorMode === "light" ? (
-                                                    <MoonIcon />
-                                                ) : (
-                                                    <SunIcon />
-                                                )
-                                            }
-                                            variant="ghost"
-                                        />
-                                    </MenuItem>
-                                </MenuList>
-                            </Menu>
-                        )}
                     </Stack>
                 )}
             </Flex>
 
-            {/* Mobile Navigation Links */}
             <Collapse
                 in={isOpen}
                 animateOpacity
@@ -393,106 +318,71 @@ const Navbar = ({ NAV_ITEMS = [] }) => {
     );
 };
 
-const DesktopNav = ({ NAV_ITEMS = [] }) => {
-    const linkColor = useColorModeValue("gray.600", "gray.200");
-    const linkHoverColor = useColorModeValue("gray.800", "blue.800");
+const DesktopNav = ({ NAV_ITEMS }) => (
+    <Stack
+        direction={"row"}
+        spacing={4}
+    >
+        {NAV_ITEMS.map((navItem) => (
+            <DesktopNavItem
+                key={navItem.label}
+                {...navItem}
+            />
+        ))}
+    </Stack>
+);
 
-    return (
-        <Stack
-            direction={"row"}
-            spacing={4}
+const DesktopNavItem = ({ label, href, children }) => (
+    <Box>
+        <Link
+            p={2}
+            href={href}
+            fontSize={"sm"}
+            fontWeight={500}
+            color={useColorModeValue("gray.600", "white")}
+            _hover={{
+                textDecoration: "none",
+                color: useColorModeValue("gray.800", "gray.200"),
+            }}
+            transition="color 0.3s ease"
         >
-            {NAV_ITEMS.map((navItem) =>
-                navItem.href === "#why-name" ||
-                navItem.href === "#how-it-works" ? (
-                    <Box key={navItem.label}>
-                        <Link
-                            to={navItem.href ?? "#"}
-                            p={2}
-                            fontSize={"md"}
-                            fontWeight={500}
-                            color={linkColor}
-                            _hover={{
-                                textDecoration: "none",
-                                color: linkHoverColor,
-                            }}
-                            _activeLink={{
-                                color: "pink.400",
-                            }}
-                        >
-                            {navItem.label}
-                        </Link>
-                    </Box>
-                ) : (
-                    <Box key={navItem.label}>
-                        <Link
-                            as={NavLink}
-                            to={navItem.href ?? "#"}
-                            p={2}
-                            fontSize={"md"}
-                            fontWeight={500}
-                            color={linkColor}
-                            _hover={{
-                                textDecoration: "none",
-                                color: linkHoverColor,
-                            }}
-                            _activeLink={{
-                                color: "pink.400",
-                            }}
-                        >
-                            {navItem.label}
-                        </Link>
-                    </Box>
-                )
-            )}
-        </Stack>
-    );
-};
+            {label}
+        </Link>
+    </Box>
+);
 
-const MobileNav = ({ NAV_ITEMS = [] }) => {
-    return (
-        <Stack
-            bg={useColorModeValue("white", "gray.800")}
-            py={8}
-            display={{ md: "none" }}
+const MobileNav = ({ NAV_ITEMS }) => (
+    <Stack
+        bg={useColorModeValue("white", "gray.800")}
+        p={4}
+        display={{ md: "none" }}
+        spacing={4}
+    >
+        {NAV_ITEMS.map((navItem) => (
+            <MobileNavItem
+                key={navItem.label}
+                {...navItem}
+            />
+        ))}
+    </Stack>
+);
+
+const MobileNavItem = ({ label, href, children }) => (
+    <Stack spacing={4}>
+        <Link
+            href={href}
+            fontSize={"sm"}
+            fontWeight={500}
+            color={useColorModeValue("gray.600", "white")}
+            _hover={{
+                textDecoration: "none",
+                color: useColorModeValue("gray.800", "gray.200"),
+            }}
+            transition="color 0.3s ease"
         >
-            {NAV_ITEMS.map((navItem) => (
-                <MobileNavItem
-                    key={navItem.label}
-                    {...navItem}
-                />
-            ))}
-        </Stack>
-    );
-};
-
-const MobileNavItem = ({ label, href }) => {
-    return (
-        <Stack spacing={4}>
-            <Flex
-                py={2}
-                as={NavLink}
-                to={href ?? "#"}
-                justify={"center"}
-                align={"center"}
-                _hover={{
-                    textDecoration: "none",
-                    color: "blue",
-                }}
-                _activeLink={{
-                    color: "pink.400",
-                }}
-            >
-                <Text
-                    fontWeight={600}
-                    color={useColorModeValue("gray.600", "gray.200")}
-                    textAlign="center"
-                >
-                    {label}
-                </Text>
-            </Flex>
-        </Stack>
-    );
-};
+            {label}
+        </Link>
+    </Stack>
+);
 
 export default Navbar;

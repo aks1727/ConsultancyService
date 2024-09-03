@@ -46,7 +46,7 @@ const MentorUpdateDetails = () => {
         <Box p={5} maxW="600px" mx="auto" textAlign="center">
             <VStack spacing={4} align="start">
                 <Text fontSize="2xl" fontWeight="bold">Welcome!</Text>
-                <Text>Filing your profile for a ProPeer verification should not take more than 5-10 minutes. As a part of the process, we will ask you to fill some necessary details.</Text>
+                <Text>Filing your profile for a  Consultancy Service verification should not take more than 5-10 minutes. As a part of the process, we will ask you to fill some necessary details.</Text>
                 <Text fontWeight="bold">You will need to:</Text>
                 <List spacing={3} textAlign="left">
                     <ListItem>

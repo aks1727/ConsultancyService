@@ -115,6 +115,9 @@ const Profile = () => {
                         </Button>
                         {userDetails?.isMentor !== "yes" && (
                             <Button
+                                onClick={() => {
+                                    navigate('/become-mentor/0')
+                                }}
                                 leftIcon={<FiUserPlus />}
                                 colorScheme="yellow"
                             >

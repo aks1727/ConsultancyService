@@ -273,6 +273,7 @@ const Chat = () => {
                     flex="1"
                 />
                 <IconButton
+                    type="submit"
                     onClick={handleSendMessage}
                     icon={<IoSend />}
                     aria-label="Send message"

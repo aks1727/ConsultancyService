@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import {
     Box,
@@ -11,17 +11,22 @@ import {
     FormControl,
     Text,
     HStack,
+    useBreakpointValue,
 } from "@chakra-ui/react";
+import gsap from "gsap";
 import conf from "../conf/conf";
 import MentorCard from "../Components/Card/MentorCard";
-import Loader from "../Components/Loader/Loader.jsx"
+import Loader from "../Components/Loader/Loader.jsx";
+
 const Search = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const value = searchParams.get("value");
     const [searchQuery, setSearchQuery] = useState(value || "");
     const [searchData, setSearchData] = useState([]);
-    const [isLoader, setIsLoader] = useState(false)
+    const [isLoader, setIsLoader] = useState(false);
+    const resultsRef = useRef(null); // For GSAP animations
+    const searchBoxRef = useRef(null);
 
     const searchContent = async () => {
         setIsLoader(true);
@@ -36,7 +41,7 @@ const Search = () => {
         } catch (error) {
             console.log(error);
         }
-        setIsLoader(false)
+        setIsLoader(false);
     };
 
     useEffect(() => {
@@ -47,6 +52,28 @@ const Search = () => {
         }
     }, [value]);
 
+    useEffect(() => {
+        // GSAP animation for search results
+        if (searchData.length > 0) {
+            gsap.from(resultsRef.current, {
+                duration: 1,
+                opacity: 0,
+                y: 30,
+                ease: "power2.out",
+            });
+        }
+    }, [searchData]);
+
+    useEffect(() => {
+        // Animate search box on page load
+        gsap.from(searchBoxRef.current, {
+            duration: 1.2,
+            y: -20,
+            opacity: 0,
+            ease: "power2.out",
+        });
+    }, []);
+
     const handleSearch = (event) => {
         event.preventDefault();
         navigate(`?value=${searchQuery}`);
@@ -56,7 +83,9 @@ const Search = () => {
     const color = useColorModeValue("black", "white");
     const placeholderColor = useColorModeValue("gray.500", "gray.300");
 
-    return isLoader ? <Loader/> :(
+    return isLoader ? (
+        <Loader />
+    ) : (
         <>
             <VStack
                 spacing={4}
@@ -65,8 +94,9 @@ const Search = () => {
                 color={color}
                 p={4}
                 borderRadius="md"
-                shadow="md"
+                shadow="lg"
                 maxW="full"
+                ref={searchBoxRef}
             >
                 <form onSubmit={handleSearch}>
                     <FormControl id="search">
@@ -78,11 +108,27 @@ const Search = () => {
                                 placeholder="Search by value or name"
                                 _placeholder={{ color: placeholderColor }}
                                 bg={useColorModeValue("white", "gray.800")}
+                                border="2px solid"
+                                borderColor={useColorModeValue(
+                                    "gray.300",
+                                    "gray.700"
+                                )}
+                                _focus={{
+                                    borderColor: useColorModeValue(
+                                        "blue.400",
+                                        "blue.600"
+                                    ),
+                                    boxShadow:
+                                        "0 0 5px 2px rgba(0, 0, 255, 0.2)",
+                                }}
+                                transition="border-color 0.2s, box-shadow 0.2s"
                             />
                             <Button
                                 type="submit"
                                 colorScheme="blue"
                                 ml={2}
+                                _hover={{ transform: "scale(1.05)" }}
+                                transition="transform 0.2s"
                             >
                                 Search
                             </Button>
@@ -111,10 +157,11 @@ const Search = () => {
                 color={color}
                 p={4}
                 borderRadius="md"
-                shadow="md"
+                shadow="lg"
                 maxW="full"
                 mt={1}
                 mb={20}
+                ref={resultsRef}
             >
                 <Heading
                     as="h2"
@@ -127,13 +174,14 @@ const Search = () => {
                         spacing={4}
                         w={"100%"}
                     >
-                        {searchData?.map((item) => <MentorCard
+                        {searchData?.map((item) => (
+                            <MentorCard
                                 key={item?.data._id}
                                 mentor={item?.data}
-                            userDetails={item?.data.userId}
-                            id={item?.data._id}
-                            /> 
-                        )}
+                                userDetails={item?.data.userId}
+                                id={item?.data._id}
+                            />
+                        ))}
                     </VStack>
                 )}
             </Box>

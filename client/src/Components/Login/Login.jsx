@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 import { login as authLogin } from "../../store/authSlice.js";
 import {
     Button,
@@ -14,15 +17,24 @@ import {
     useColorModeValue,
     Flex,
     VStack,
+    Image,
+    useColorMode,
+    keyframes,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
+import Slider from "react-slick";
 import conf from "../../conf/conf.js";
 import Loader from "../Loader/Loader.jsx";
+
+import careerLogin from "/img/careerLogin.png";
+import businessLogin from "/img/businessLogin.jpeg";
+import crLogin from "/img/crlogin1.jpeg";
 
 function Login() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [isLoader, setIsLoader] = useState(false)
+    const { colorMode } = useColorMode();
+    const [isLoader, setIsLoader] = useState(false);
     const {
         register,
         handleSubmit,
@@ -30,67 +42,70 @@ function Login() {
     } = useForm();
     const [error, setError] = useState("");
 
-    // Function to handle login form submission
+    const slideInAnimation = keyframes`
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    `;
+
     const login = async (data) => {
-        setIsLoader(true)
+        setIsLoader(true);
         setError("");
         try {
-            // console.log(data);
-
-            // Send login request to backend
             const session = await fetch(`${conf.backendUser}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(data),
-                credentials: "include", // Include credentials (cookies)
+                credentials: "include",
             });
 
-            // console.log(session);
-
-            // Check if login was successful
             if (session.ok) {
-                // Fetch current user data
                 const userData = await fetch(
                     `${conf.backendUser}/currentUser`,
-                    { credentials: "include" }
+                    {
+                        credentials: "include",
+                    }
                 )
                     .then((res) => res.json())
                     .then((res) => res.data);
 
-                // console.log(userData);
-
-                // Dispatch login action with user data
                 if (userData) {
                     dispatch(authLogin(userData));
                 }
 
-                // Navigate to the home page
-                if (userData.isMentor === 'yes') {
+                if (userData.isMentor === "yes") {
                     navigate(`/mentor/${userData.username}`);
-                }
-                else navigate("/feed");
+                } else navigate("/search");
             } else {
-                // Handle login error
                 const errorData = await session.json();
                 setError(errorData.message);
             }
         } catch (error) {
-            // Handle network or other errors
             setError(error.message);
         }
-        setIsLoader(false)
+        setIsLoader(false);
     };
 
-    // Color mode values for light and dark themes
-    const bgColor = useColorModeValue("gray.100", "gray.700");
+    const bgColor = useColorModeValue(
+        "white",
+        "linear-gradient(135deg, #1A202C, #4A5568)"
+    );
     const formBgColor = useColorModeValue("white", "gray.800");
     const textColor = useColorModeValue("black", "white");
     const errorColor = useColorModeValue("red.600", "red.400");
     const linkColor = useColorModeValue("blue.500", "blue.300");
 
-
+    // Carousel settings
+    const settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 3000,
+    };
 
     return isLoader ? (
         <Loader />
@@ -100,42 +115,79 @@ function Login() {
             justify="center"
             bg={bgColor}
             minH="100vh"
-            p={[4, 6, 8]}
+            direction={{ base: "column", md: "row" }}
+            position="relative"
+            overflow="hidden"
         >
+            {/* Carousel of Illustrations */}
             <Box
-                w="full"
-                maxW={["full", "lg"]}
+                flex="1"
+                display={{ base: "none", md: "block" }}
+                animation={`${slideInAnimation} 2s ease`}
+                w="40%"
+                h="100vh"
+                position="relative"
+                overflow="hidden"
+            >
+                <Slider {...settings}>
+                    <Image
+                        w="full"
+                        h="100vh"
+                        src={careerLogin}
+                        alt="Illustration 1"
+                        filter="brightness(90%)"
+                    />
+                    <Image
+                        w="full"
+                        h="100vh"
+                        src={businessLogin}
+                        alt="Illustration 2"
+                        filter="brightness(90%)"
+                    />
+                    <Image
+                        w="full"
+                        h="100vh"
+                        src={crLogin}
+                        alt="Illustration 3"
+                        filter="brightness(90%)"
+                    />
+                </Slider>
+            </Box>
+
+            {/* Login form with animation */}
+            <Flex
+                w={{ base: "100%", md: "60%" }}
+                h="100vh"
                 bg={formBgColor}
                 rounded="xl"
                 p={[6, 8, 10]}
-                border="1px"
-                borderColor="blackAlpha.200"
-                boxShadow="xl"
+                boxShadow="2xl"
+                animation={`${slideInAnimation} 1s ease`}
+                transition="all 0.3s ease"
+                zIndex={2}
+                alignItems="center"
+                justifyContent="center"
             >
                 <Box
-                    mb={2}
+                    w={{ base: "90%", md: "80%", lg: "60%" }}
                     textAlign="center"
+                    transition="all 0.3s ease"
+                    _hover={{ transform: "scale(1.02)" }}
                 >
-                    {/* Logo */}
-                    <Box className="mb-2 flex justify-center">
-                        <span className="inline-block w-full max-w-[100px]">
-                            Logo
-                        </span>
-                    </Box>
-
-                    {/* Heading */}
                     <Heading
                         as="h2"
                         size="lg"
-                        mb={2}
+                        mb={4}
+                        fontSize={{ base: "2xl", md: "3xl" }}
+                        fontWeight="bold"
                     >
                         Sign in to your account
                     </Heading>
 
-                    {/* Sign up link */}
                     <Text
                         fontSize={["md", "lg"]}
                         color={textColor}
+                        mb={6}
                     >
                         Don&apos;t have an account?&nbsp;
                         <Link
@@ -148,86 +200,107 @@ function Login() {
                             Sign Up
                         </Link>
                     </Text>
-                </Box>
 
-                {/* Display error message if any */}
-                {error && (
-                    <Text
-                        color={errorColor}
-                        mt={4}
-                        textAlign="center"
-                    >
-                        {error}
-                    </Text>
-                )}
-
-                {/* Login form */}
-                <form onSubmit={handleSubmit(login)}>
-                    <VStack spacing={4}>
-                        {/* Email input */}
-                        <FormControl isInvalid={errors.email}>
-                            <FormLabel htmlFor="email">Email:</FormLabel>
-                            <Input
-                                id="email"
-                                placeholder="Enter your Email"
-                                type="email"
-                                autoComplete="off" // Disable autocomplete
-                                bg="white"
-                                color="black"
-                                {...register("email", {
-                                    required: "Email is required",
-                                    validate: {
-                                        matchPattern: (value) =>
-                                            /^([\w\.\-_]+)?\w+@[\w-_]+(\.\w+){1,}$/.test(
-                                                value
-                                            ) ||
-                                            "Email Address Must be valid email address",
-                                    },
-                                })}
-                            />
-                            <FormErrorMessage>
-                                {errors.email && errors.email.message}
-                            </FormErrorMessage>
-                        </FormControl>
-
-                        {/* Password input */}
-                        <FormControl isInvalid={errors.password}>
-                            <FormLabel htmlFor="password">Password:</FormLabel>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="Enter your password"
-                                autoComplete="off" // Disable autocomplete
-                                bg="white"
-                                color="black"
-                                {...register("password", {
-                                    required: "Password is required",
-                                })}
-                            />
-                            <FormErrorMessage>
-                                {errors.password && errors.password.message}
-                            </FormErrorMessage>
-                        </FormControl>
-
-                        {/* Submit button */}
-                        <Button
-                            type="submit"
-                            colorScheme="blue"
-                            w="full"
+                    {error && (
+                        <Text
+                            color={errorColor}
+                            mb={6}
+                            fontWeight="bold"
                         >
-                            Sign in
-                        </Button>
-                        {error === "Passwords do not match" && (
-                            <Text
-                                as={NavLink}
-                                to={"/changePassword"}
+                            {error}
+                        </Text>
+                    )}
+
+                    <form onSubmit={handleSubmit(login)}>
+                        <VStack spacing={6}>
+                            <FormControl isInvalid={errors.email}>
+                                <FormLabel htmlFor="email">Email:</FormLabel>
+                                <Input
+                                    id="email"
+                                    placeholder="Enter your Email"
+                                    type="email"
+                                    autoComplete="off"
+                                    bg="white"
+                                    color="black"
+                                    borderRadius="md"
+                                    borderColor="gray.300"
+                                    boxShadow="sm"
+                                    _focus={{
+                                        borderColor: "blue.500",
+                                        boxShadow: "outline",
+                                    }}
+                                    {...register("email", {
+                                        required: "Email is required",
+                                        validate: {
+                                            matchPattern: (value) =>
+                                                /^([\w\.\-_]+)?\w+@[\w-_]+(\.\w+){1,}$/.test(
+                                                    value
+                                                ) ||
+                                                "Email Address Must be valid email address",
+                                        },
+                                    })}
+                                />
+                                <FormErrorMessage>
+                                    {errors.email && errors.email.message}
+                                </FormErrorMessage>
+                            </FormControl>
+
+                            <FormControl isInvalid={errors.password}>
+                                <FormLabel htmlFor="password">
+                                    Password:
+                                </FormLabel>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    placeholder="Enter your password"
+                                    autoComplete="off"
+                                    bg="white"
+                                    color="black"
+                                    borderRadius="md"
+                                    borderColor="gray.300"
+                                    boxShadow="sm"
+                                    _focus={{
+                                        borderColor: "blue.500",
+                                        boxShadow: "outline",
+                                    }}
+                                    {...register("password", {
+                                        required: "Password is required",
+                                    })}
+                                />
+                                <FormErrorMessage>
+                                    {errors.password && errors.password.message}
+                                </FormErrorMessage>
+                            </FormControl>
+
+                            <Button
+                                type="submit"
+                                colorScheme="blue"
+                                w="full"
+                                borderRadius="md"
+                                py={6}
+                                fontSize="lg"
+                                fontWeight="bold"
+                                _hover={{ bg: "blue.600" }}
                             >
-                                Change your password here
-                            </Text>
-                        )}
-                    </VStack>
-                </form>
-            </Box>
+                                Sign in
+                            </Button>
+
+                            {error === "Passwords do not match" && (
+                                <Text
+                                    as={NavLink}
+                                    to={"/changePassword"}
+                                    mt={2}
+                                    fontSize="sm"
+                                    color={linkColor}
+                                    _hover={{ textDecoration: "underline" }}
+                                >
+                                    Change your password here
+                                </Text>
+                            )}
+                        </VStack>
+                    </form>
+                </Box>
+            </Flex>
         </Flex>
     );
 }

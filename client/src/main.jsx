@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 import {
-    Feed,
     Home,
     Mentorship,
     Roadmaps,
@@ -54,6 +53,7 @@ import MentorChat from "./Components/mentor/MentorChat.jsx";
 import Chat from "./pages/Chat.jsx";
 import ChatLayout from "./Components/Layout/ChatLayout.jsx";
 import ChangePassword from "./Components/ChangePassword.jsx";
+import Verfication from "./Components/Verfication.jsx";
 ;
 
 
@@ -67,13 +67,13 @@ const router = createBrowserRouter([
                 element: <Home />,
             },
             {
+                path: 'verification/:data',
+                element:<Verfication/>
+            },
+            {
                 path: "/",
                 element: <Layoutone />, // Layout wrapper for nested routes
                 children: [
-                    {
-                        path: "feed",
-                        element: <Feed />,
-                    },
                     {
                         path: "mentorship",
                         element: <Mentorship />,
@@ -106,11 +106,6 @@ const router = createBrowserRouter([
                 element: (
                     <ChatLayout
                         Navitems={[
-                            {
-                                label: "Feed",
-                                href: "/feed",
-                                icon: FaHome,
-                            },
                             {
                                 label: "Search",
                                 href: "/search",
