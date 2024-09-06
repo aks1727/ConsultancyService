@@ -6,15 +6,15 @@ const bounce = keyframes`
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-12px); /* Increased height for a bigger bounce */
   }
 `;
 
 const Loader = () => {
+    const bg = useColorModeValue('gray.100', 'gray.800');
+    const textColor = useColorModeValue('gray.700', 'gray.200');
+    const ballColor = useColorModeValue('blue.500', 'blue.900');
 
-    const bg = useColorModeValue('gray.100','gray.800')
-    const text = useColorModeValue('black', 'white')
-    const ball = useColorModeValue('blue.500', 'blue.900')
     return (
         <Box
             display="flex"
@@ -25,13 +25,21 @@ const Loader = () => {
             width="100vw"
             bg={bg}
         >
-            {/* <Image
-                src={logo}
-                alt="Logo"
-                boxSize="100px"
-                mb={4}
-            /> */}
-        <Text color={text} mb={4}>Logo</Text>
+            {/* Replace the text with an image logo if necessary */}
+            <Text
+                color={textColor}
+                fontSize="2xl" /* Increased font size */
+                fontWeight="bold"
+                mb={6}
+                _hover={{
+                    transform: "scale(1.05)", // Subtle hover effect
+                    transition: "transform 0.3s ease",
+                }}
+            >
+                Logo
+            </Text>
+
+            {/* Loader Dots */}
             <Box
                 display="flex"
                 alignItems="center"
@@ -40,14 +48,13 @@ const Loader = () => {
                 {[1, 2, 3].map((dot) => (
                     <Box
                         key={dot}
-                        width="10px"
-                        height="10px"
-                        bg={ball}
+                        width={{ base: "12px", md: "16px" }} /* Responsive size */
+                        height={{ base: "12px", md: "16px" }}
+                        bg={ballColor}
                         borderRadius="50%"
-                        mx="2px"
-                        animation={`${bounce} 0.6s ${
-                            dot * 0.1
-                        }s infinite ease-in-out`}
+                        mx="4px" /* Increased spacing between dots */
+                        boxShadow="0 4px 10px rgba(0, 0, 0, 0.2)" /* Added shadow for depth */
+                        animation={`${bounce} 0.8s ${dot * 0.2}s infinite ease-in-out`}
                     />
                 ))}
             </Box>

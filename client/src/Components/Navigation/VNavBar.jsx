@@ -15,6 +15,7 @@ import {
     PopoverCloseButton,
     PopoverBody,
     Button,
+    Text,
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import { FaHome, FaSearch, FaUserFriends, FaStream, FaEllipsisH } from "react-icons/fa";
@@ -22,24 +23,14 @@ import { FaHome, FaSearch, FaUserFriends, FaStream, FaEllipsisH } from "react-ic
 // Default Navigation Items
 const DEFAULT_NAV_ITEMS = [
     {
-        label: "Feed",
-        href: "/feed",
+        label: "Home",
+        href: "/",
         icon: FaHome,
     },
     {
         label: "Search",
         href: "/search",
         icon: FaSearch,
-    },
-    {
-        label: "Mentorship",
-        href: "/mentorship",
-        icon: FaUserFriends,
-    },
-    {
-        label: "Roadmaps",
-        href: "/roadmaps",
-        icon: FaStream,
     },
 ];
 
@@ -52,7 +43,6 @@ const VNavbar = ({ navItems = DEFAULT_NAV_ITEMS }) => {
     const primaryNavItems = (navItems.length > 4 ? navItems.slice(0, 3) : navItems) || [];
     const additionalNavItems = (navItems.length > 4 ? navItems.slice(3) : []) || [];
 
-
     return (
         <Box>
             {/* Main Navbar container */}
@@ -60,26 +50,28 @@ const VNavbar = ({ navItems = DEFAULT_NAV_ITEMS }) => {
                 direction={{ base: "row", md: "column" }}
                 bg={useColorModeValue("white", "gray.800")}
                 color={useColorModeValue("gray.600", "white")}
-                minH={{ base: "50px", md: "100vh" }} // Reduced height
-                py={{ base: 1, md: 2 }} // Reduced padding
-                px={{ base: 2, md: 4 }} // Reduced padding
+                minH={{ base: "50px", md: "100vh" }}
+                py={{ base: 2, md: 4 }}
+                px={{ base: 3, md: 5 }}
                 borderRight={{ md: "1px" }}
                 borderTop={{ base: "1px", md: "none" }}
                 borderStyle={"solid"}
                 borderColor={useColorModeValue("gray.200", "gray.900")}
                 align={"center"}
                 position={{ base: "fixed", md: "fixed" }}
-                w={{ base: "100%", md: "240px" }} // Increased width
+                w={{ base: "100%", md: "240px" }}
                 bottom={{ base: 0, md: "auto" }}
                 top={{ base: "auto", md: 0 }}
                 alignItems={"center"}
                 justifyContent={"center"}
-                pt={6} // Reduced padding-top
+                boxShadow={useColorModeValue("lg", "2xl")} // Added subtle shadow
+                rounded={{ base: "none", md: "lg" }} // Rounded for desktop
+                bgGradient={useColorModeValue("linear(to-r, blue.50, purple.50)", "linear(to-r, gray.700, gray.900)")} // Gradient background
             >
                 {/* Mobile Bottom Navigation */}
                 {isMobile && (
                     <HStack
-                        spacing={2} // Reduced spacing
+                        spacing={4}
                         bg={useColorModeValue("white", "gray.800")}
                         borderTopWidth={1}
                         borderColor={useColorModeValue("gray.200", "gray.900")}
@@ -87,7 +79,7 @@ const VNavbar = ({ navItems = DEFAULT_NAV_ITEMS }) => {
                         bottom={0}
                         w="100%"
                         justifyContent="space-around"
-                        py={1} // Reduced padding
+                        py={2}
                     >
                         {primaryNavItems?.map((navItem) => (
                             <NavItem key={navItem.label} to={navItem.href} icon={navItem.icon} label={navItem.label} />
@@ -96,10 +88,10 @@ const VNavbar = ({ navItems = DEFAULT_NAV_ITEMS }) => {
                             <Popover>
                                 <PopoverTrigger>
                                     <Button variant="ghost" p={0} height="auto">
-                                        <Icon as={FaEllipsisH} boxSize={5} />
+                                        <Icon as={FaEllipsisH} boxSize={6} />
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent width="auto" minWidth="max-content" maxWidth="80vw"> {/* Adjusted width properties */}
+                                <PopoverContent width="auto" minWidth="max-content" maxWidth="80vw">
                                     <PopoverArrow />
                                     <PopoverCloseButton />
                                     <PopoverBody>
@@ -121,12 +113,11 @@ const VNavbar = ({ navItems = DEFAULT_NAV_ITEMS }) => {
                         flex={{ base: 1 }}
                         justify={{ base: "center", md: "start" }}
                         direction={{ base: "row", md: "column" }}
-                        mt={20} // Increased top margin for desktop view
+                        mt={20}
                     >
                         <VStack
                             display={{ base: "none", md: "flex" }}
-                            mt={6}
-                            spacing={4}
+                            spacing={6}
                             alignItems="flex-start"
                         >
                             <DesktopNav navItems={navItems} />
@@ -141,28 +132,37 @@ const VNavbar = ({ navItems = DEFAULT_NAV_ITEMS }) => {
 // Desktop Navigation Component
 const DesktopNav = ({ navItems }) => {
     const linkColor = useColorModeValue("gray.600", "gray.200");
-    const linkHoverColor = useColorModeValue("gray.800", "blue.800");
+    const linkHoverColor = useColorModeValue("blue.500", "blue.300");
 
     return (
         <>
             {navItems.map((navItem) => (
-                <Box key={navItem.label} mt={3}> {/* Reduced margin-top */}
+                <Box key={navItem.label}>
                     <Link
                         as={NavLink}
                         to={navItem.href ?? "#"}
-                        p={1} // Reduced padding
-                        fontSize={"sm"} // Smaller font size
-                        fontWeight={500}
+                        display="flex"
+                        alignItems="center"
+                        p={2}
+                        fontSize={"md"}
+                        fontWeight={600}
                         color={linkColor}
+                        borderRadius="md"
                         _hover={{
                             textDecoration: "none",
+                            bg: useColorModeValue("gray.100", "gray.700"),
                             color: linkHoverColor,
+                            boxShadow: "lg",
                         }}
                         _activeLink={{
-                            color: "pink.400", // Active link style
+                            bg: useColorModeValue("pink.100", "gray.600"),
+                            color: "pink.400",
+                            borderLeft: "4px solid",
+                            borderColor: "pink.400",
                         }}
+                        transition="background-color 0.2s ease, color 0.2s ease"
                     >
-                        <Icon as={navItem.icon} mr={1} boxSize={5} /> {/* Reduced icon size */}
+                        <Icon as={navItem.icon} mr={3} boxSize={6} />
                         {navItem.label}
                     </Link>
                 </Box>
@@ -174,28 +174,29 @@ const DesktopNav = ({ navItems }) => {
 // Navigation Item for Bottom Navigation
 const NavItem = ({ to, icon, label }) => {
     const linkColor = useColorModeValue("gray.600", "gray.200");
-    const linkHoverColor = useColorModeValue("gray.800", "blue.800");
+    const linkHoverColor = useColorModeValue("blue.500", "blue.300");
 
     return (
         <Link
             as={NavLink}
             to={to}
-            p={1} // Reduced padding
-            fontSize={"sm"} // Smaller font size
+            p={2}
+            fontSize={"sm"}
+            fontWeight={500}
             color={linkColor}
             _hover={{
                 textDecoration: "none",
                 color: linkHoverColor,
             }}
             _activeLink={{
-                color: "pink.400", // Active link style
+                color: "pink.400",
             }}
             textAlign="center"
         >
-            <Icon as={icon} boxSize={5} /> {/* Reduced icon size */}
-            <Box mt={1} fontSize="xs">
-                {label} {/* Smaller font size for label */}
-            </Box>
+            <Icon as={icon} boxSize={6} />
+            <Text fontSize="xs" mt={1}>
+                {label}
+            </Text>
         </Link>
     );
 };

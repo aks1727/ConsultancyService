@@ -14,6 +14,7 @@ import {
     useBreakpointValue,
 } from "@chakra-ui/react";
 import gsap from "gsap";
+import { CiSearch } from "react-icons/ci";
 import conf from "../conf/conf";
 import MentorCard from "../Components/Card/MentorCard";
 import Loader from "../Components/Loader/Loader.jsx";
@@ -37,7 +38,6 @@ const Search = () => {
             if (!res.ok) throw new Error("Failed to fetch search results");
             const data = await res.json();
             setSearchData(data.data);
-            console.log(data.data);
         } catch (error) {
             console.log(error);
         }
@@ -45,15 +45,12 @@ const Search = () => {
     };
 
     useEffect(() => {
-        // Fetch and display mentors based on the value or name
         if (value) {
             searchContent();
-            console.log(searchData, "search Data");
         }
     }, [value]);
 
     useEffect(() => {
-        // GSAP animation for search results
         if (searchData.length > 0) {
             gsap.from(resultsRef.current, {
                 duration: 1,
@@ -65,7 +62,6 @@ const Search = () => {
     }, [searchData]);
 
     useEffect(() => {
-        // Animate search box on page load
         gsap.from(searchBoxRef.current, {
             duration: 1.2,
             y: -20,
@@ -79,6 +75,10 @@ const Search = () => {
         navigate(`?value=${searchQuery}`);
     };
 
+    const bgGradient = useColorModeValue(
+        "linear(to-r, teal.400, blue.500)",
+        "linear(to-r, teal.800, blue.900)"
+    );
     const bg = useColorModeValue("white", "gray.800");
     const color = useColorModeValue("black", "white");
     const placeholderColor = useColorModeValue("gray.500", "gray.300");
@@ -88,92 +88,95 @@ const Search = () => {
     ) : (
         <>
             <VStack
-                spacing={4}
+                spacing={1}
                 align="stretch"
-                bg={bg}
+                bgGradient={bgGradient}
                 color={color}
-                p={4}
-                borderRadius="md"
-                shadow="lg"
-                maxW="full"
+                p={{base:2, md:8}}
+                px={{base:4, md:20}}
+                borderRadius="lg"
+                shadow="2xl"
+                w="100%" 
+                maxW="100%" 
                 ref={searchBoxRef}
+                mx="auto"
             >
+                <Heading
+                    as="h1"
+                    fontSize="2xl"
+                    color={useColorModeValue("white", "teal.200")}
+                    textAlign="center"
+                    mb={1}
+                >
+                    Find Your Mentor
+                </Heading>
                 <form onSubmit={handleSearch}>
                     <FormControl id="search">
-                        <Flex>
+                        <Flex
+                            border="1px solid"
+                            borderRadius="full"
+                            bg={bg}
+                            boxShadow="md"
+                            align="center"
+                            p={1}
+                            pl={4}
+                        >
                             <Input
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search by value or name"
                                 _placeholder={{ color: placeholderColor }}
-                                bg={useColorModeValue("white", "gray.800")}
-                                border="2px solid"
-                                borderColor={useColorModeValue(
-                                    "gray.300",
-                                    "gray.700"
-                                )}
+                                border="none"
+                                focusBorderColor="transparent"
                                 _focus={{
-                                    borderColor: useColorModeValue(
-                                        "blue.400",
-                                        "blue.600"
-                                    ),
-                                    boxShadow:
-                                        "0 0 5px 2px rgba(0, 0, 255, 0.2)",
+                                    boxShadow: "none",
                                 }}
-                                transition="border-color 0.2s, box-shadow 0.2s"
+                                w="100%"
+                                bg="transparent"
                             />
                             <Button
                                 type="submit"
                                 colorScheme="blue"
                                 ml={2}
+                                borderRadius="full"
                                 _hover={{ transform: "scale(1.05)" }}
                                 transition="transform 0.2s"
                             >
-                                Search
+                                <CiSearch size={20} />
                             </Button>
                         </Flex>
                     </FormControl>
                 </form>
                 {value && (
-                    <Box
-                        bg={useColorModeValue("white", "gray.800")}
-                        p={1}
-                        borderRadius="md"
-                    >
+                    <Box bg={bg} p={2} borderRadius="lg" mt={2}>
                         <Text
                             as="h2"
-                            fontSize={"lg"}
+                            fontSize="lg"
+                            textAlign="center"
                         >
-                            Search Results for: {value}
+                            Search Results for: <strong>{value}</strong>
                         </Text>
                     </Box>
                 )}
             </VStack>
+
             <Box
-                spacing={4}
-                align="stretch"
+                spacing={6}
                 bg={bg}
                 color={color}
-                p={4}
-                borderRadius="md"
-                shadow="lg"
+                p={8}
+                borderRadius="lg"
+                shadow="2xl"
                 maxW="full"
-                mt={1}
-                mb={20}
+                mt={8}
                 ref={resultsRef}
             >
-                <Heading
-                    as="h2"
-                    fontSize={"lg"}
-                >
+                <Heading as="h2" fontSize="xl" mb={4}>
                     Mentors:
                 </Heading>
-                {searchData.length > 0 && (
-                    <VStack
-                        spacing={4}
-                        w={"100%"}
-                    >
+                {searchData.length > 0 ? (
+                    <VStack spacing={6} w="100%">
                         {searchData?.map((item) => (
                             <MentorCard
                                 key={item?.data._id}
@@ -183,6 +186,8 @@ const Search = () => {
                             />
                         ))}
                     </VStack>
+                ) : (
+                    <Text fontSize="lg">No mentors found.</Text>
                 )}
             </Box>
         </>

@@ -172,7 +172,8 @@ function Home() {
                     direction="column"
                     align="center"
                     justify="center"
-                    py={12}
+                    py={20}
+
                     bgGradient={bgHeader}
                     id="consultancy"
                 >

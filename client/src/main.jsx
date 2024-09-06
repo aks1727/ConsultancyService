@@ -160,11 +160,6 @@ const router = createBrowserRouter([
                                 href: "edit-achievements",
                                 icon: FaTrophy,
                             },
-                            {
-                                label: "Account Control",
-                                href: "account-control",
-                                icon: FaUserCog,
-                            },
                         ]}
                     />
                 ),

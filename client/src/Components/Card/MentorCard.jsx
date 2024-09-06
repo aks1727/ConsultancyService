@@ -177,13 +177,21 @@ const MentorCard = ({ mentor, userDetails, id }) => {
                         </Stack>
                     </VStack>
 
+                    {/* Divider */}
+                    <Divider
+                        borderColor={borderColor}
+                        orientation="vertical"
+                        height="auto"
+                        width="2px" // Increased width for visibility
+                        mx={6}
+                    />
+                    
                     {/* Right Section */}
                     <VStack
                         align="start"
                         spacing={4}
                         flex="0.6"
                     >
-                        <Divider borderColor={borderColor} />
                         <Text
                             fontWeight="bold"
                             color={headingColor}
