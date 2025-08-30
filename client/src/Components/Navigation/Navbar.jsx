@@ -402,7 +402,7 @@ const AuthButtons = ({
 			</Button>
 			<Button
 				as={NavLink}
-				to="/register"
+				to="/signup"
 				fontSize={"sm"}
 				fontWeight={600}
 				color={"white"}
