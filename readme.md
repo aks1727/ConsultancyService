@@ -62,8 +62,8 @@ Make sure you have installed:
 #### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/consultancyService.git
-cd consultancyService
+git clone [https://github.com/aks1727/ConsultancyService.git](https://github.com/aks1727/ConsultancyService.git)
+cd ConsultancyService
 ```
 
 #### 2. Setup Backend (Server)
